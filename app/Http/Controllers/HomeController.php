@@ -11,4 +11,11 @@ class HomeController extends Controller
         // Pass an empty array or other data to the dashboard view
         return view('users.main-admin.ma-dashboard');
     }
+
+    public function votingSettings()
+    {
+        return view('users.main-admin.ma-votingSettings');
+    }
+
+
 }

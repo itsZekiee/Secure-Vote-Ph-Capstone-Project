@@ -11,8 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 <body>
-    <div x-data="{ collapsed: false }" class="flex">
-        <!-- Sidebar -->
+    <div x-data="{ collapsed: false, loading: false }" class="flex">        <!-- Sidebar -->
         <aside :class="collapsed ? 'w-20' : 'w-64'" class="bg-[#444444] text-white min-h-screen flex flex-col transition-all duration-300">
             <div class="p-6 flex-1 flex flex-col">
                 <div class="flex items-center space-x-2 mb-4">
@@ -46,7 +45,11 @@
                             </a>
                         </li>
                         <li class="mb-4 nav__items flex items-center justify-start">
-                            <a href="#" class="hover:text-gray-400 nav__link flex items-center text-left">
+                            <a
+                                href="{{ route('voting.settings') }}"
+                                class="hover:text-gray-400 nav__link flex items-center text-left"
+                                @click.prevent="loading = true; window.location.href = '{{ route('voting.settings') }}';"
+                            >
                                 <i class="ri-settings-3-fill mr-2"></i>
                                 <span x-show="!collapsed">Voting Settings</span>
                             </a>
@@ -76,6 +79,11 @@
                 <a href="#" class="hover:text-gray-400 nav__link flex items-center justify-start">
                     <i class="ri-logout-box-fill"></i>
                 </a>
+            </div>
+
+            <!-- Loader Animation (place near main content) -->
+            <div x-show="loading" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
             </div>
         </aside>
 
