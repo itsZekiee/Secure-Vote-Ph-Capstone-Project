@@ -138,17 +138,18 @@
             <div class="flex flex-row gap-6 mt-8">
                 <!-- Recent Activity Panel -->
                 <div class="bg-white rounded-lg shadow-md p-6 flex-1 max-w-2xl">
-                    <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+                    <h2 class="text-xl font-bold mb-1">Recent Activity</h2>
+                    <p class="text-xs text-gray-500 mb-4">Latest system activities and updates</p>
                     <ul class="max-h-64 overflow-y-auto space-y-3 text-sm">
-                        <li>
+                        <li class="border rounded px-3 py-2">
                             <span class="font-medium">Admin</span> gave <span class="font-medium">Editor</span> role to <span class="font-medium">John Doe</span>
                             <span class="text-gray-400 ml-2">2 mins ago</span>
                         </li>
-                        <li>
+                        <li class="border rounded px-3 py-2">
                             <span class="font-medium">Voting configuration</span> updated by <span class="font-medium">Jane Smith</span>
                             <span class="text-gray-400 ml-2">10 mins ago</span>
                         </li>
-                        <li>
+                        <li class="border rounded px-3 py-2">
                             <span class="font-medium">Candidate</span> <span class="font-medium">Maria Cruz</span> added
                             <span class="text-gray-400 ml-2">30 mins ago</span>
                         </li>
@@ -157,24 +158,26 @@
                 </div>
                 <!-- System Status Panel -->
                 <div class="bg-white rounded-lg shadow-md p-6 w-80">
-                    <h2 class="text-xl font-semibold mb-4">System Status</h2>
+                    <h2 class="text-xl font-bold mb-1">System Status</h2>
+                    <p class="text-xs text-gray-500 mb-4">Current system health and alerts</p>
                     <ul class="space-y-2 text-sm">
-                        <li>
+                        <li class="border rounded px-3 py-2">
                             <span class="font-medium">Server:</span> <span class="text-green-600">Online</span>
                         </li>
-                        <li>
+                        <li class="border rounded px-3 py-2">
                             <span class="font-medium">Database:</span> <span class="text-green-600">Connected</span>
                         </li>
-                        <li>
+                        <li class="border rounded px-3 py-2">
                             <span class="font-medium">Last Backup:</span> <span>Today, 03:00 AM</span>
                         </li>
-                        <li>
+                        <li class="border rounded px-3 py-2">
                             <span class="font-medium">Active Users:</span> <span>12</span>
                         </li>
                         <!-- More status info... -->
                     </ul>
                 </div>
             </div>
+
 
         </main>
     </div>
