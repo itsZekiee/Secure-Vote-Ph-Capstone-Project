@@ -142,20 +142,30 @@
                     <p class="text-xs text-gray-500 mb-4">Latest system activities and updates</p>
                     <ul class="max-h-64 overflow-y-auto space-y-3 text-sm">
                         <li class="border rounded px-3 py-2">
-                            <span class="font-medium">Admin</span> gave <span class="font-medium">Editor</span> role to <span class="font-medium">John Doe</span>
-                            <span class="text-gray-400 ml-2">2 mins ago</span>
+                            <span class="font-medium">[10:30 AM]</span> New voter registered: John Doe
                         </li>
                         <li class="border rounded px-3 py-2">
-                            <span class="font-medium">Voting configuration</span> updated by <span class="font-medium">Jane Smith</span>
-                            <span class="text-gray-400 ml-2">10 mins ago</span>
+                            <span class="font-medium">[09:45 AM]</span> Candidate Jane Smith approved
                         </li>
                         <li class="border rounded px-3 py-2">
-                            <span class="font-medium">Candidate</span> <span class="font-medium">Maria Cruz</span> added
-                            <span class="text-gray-400 ml-2">30 mins ago</span>
+                            <span class="font-medium">[08:20 AM]</span> Backup completed successfully
                         </li>
-                        <!-- More logs... -->
+                        <li class="border rounded px-3 py-2">
+                            <span class="font-medium">[Yesterday, 05:15 PM]</span> Voting settings updated
+                        </li>
+                        <li class="border rounded px-3 py-2">
+                            <span class="font-medium">[Yesterday, 03:00 PM]</span> New partylist added: Green Party
+                        </li>
+                        <li class="border rounded px-3 py-2">
+                            <span class="font-medium">[2 days ago, 11:30 AM]</span> User admin created a new form
+                        </li>
+                        <li class="border rounded px-3 py-2">
+                            <span class="font-medium">[2 days ago, 09:00 AM]</span> System maintenance completed
+                        </li>
+                        <li class="border rounded px-3 py-2">
                     </ul>
                 </div>
+
                 <!-- System Status Panel -->
                 <div class="bg-white rounded-lg shadow-md p-6 w-80">
                     <h2 class="text-xl font-bold mb-1">System Status</h2>
@@ -173,7 +183,6 @@
                         <li class="border rounded px-3 py-2">
                             <span class="font-medium">Active Users:</span> <span>12</span>
                         </li>
-                        <!-- More status info... -->
                     </ul>
                 </div>
             </div>
