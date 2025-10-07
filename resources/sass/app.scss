@@ -1,142 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap');
+// Import Tailwind
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
-:root {
-    --header-height: 4.5rem;
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-    /* =============== COLOR PALLETS =============== */
-    --primary-color: #262626; /* Dark gray for main text and accents */
-    --secondary-color: #444444; /* Medium gray for secondary elements */
-    --tertiary-color: #262626; /* Dark gray for headings (matching primary for consistency) */
-    --brand-color: #3C3737; /* Brand-specific dark color for headers, buttons, and text (from header code) */
-    --accent-color: #1E5B5C; /* Teal accent for hovers and interactions (from header code) */
-    --white-color: #ffffff;
-    --dark-blue-color: #262626; /* Updated to dark gray */
-    --main-background: #ffffff; /* Added for body background */
-    --hover-bg: #f8f9fa; /* Light gray for hover backgrounds (from header code) */
+// Import all SCSS partials
+@import 'user-welcome';
 
-    /* =============== FONTS =============== */
-    --body-font: 'Inter', sans-serif;
-    --heading-font: 'Instrument Sans', sans-serif; /* Added for headings */
-    --big-font-size: 2.5rem;
-    --h1-font-size: 2rem;
-    --h2-font-size: 1.5rem;
-    --h3-font-size: 1rem;
-    --normal-font-size: .938rem;
-    --small-font-size: .813rem;
-    --smaller-font-size: .75rem;
-
-    /* =============== FONTS WEIGHTS =============== */
-    --font-thin: 100;
-    --font-small: 300;
-    --font-medium: 500;
-    --font-semi-bold: 600;
-
-    /* =============== MARGIN BOTTOM =============== */
-    --mb-0-5: .5rem;
-    --mb-0-75: .75rem;
-    --mb-1: 1rem;
-    --mb-1-5: 1.5rem;
-    --mb-2: 2rem;
-    --mb-2-5: 2.5rem;
-
-    /* =============== Z-INDEX =============== */
-    --z-tooltip: 10;
-    --z-fixed: 100;
+// Global utility classes
+.no-underline {
+    text-decoration: none !important;
 }
 
-/*=============== BASE ===============*/
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+.transition-all {
+    transition: all 0.3s ease;
 }
 
-html {
-    scroll-behavior: smooth;
-    margin: 0;
-    padding: 0;
+// Custom scrollbar
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-body,
-button,
-input,
-textarea {
-    font-family: var(--body-font);
-    font-size: var(--normal-font-size);
-    line-height: 1.6; /* Added from header for better readability */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--main-background);
-    color: var(--brand-color); /* Updated to use brand color for consistency with header */
-    transition: .4s;
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+
+    &:hover {
+        background: #a8a8a8;
+    }
 }
 
-button {
-    cursor: pointer;
-    border: none;
-    outline: none;
+// Focus styles for accessibility
+*:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }
 
-h1, h2, h3 {
-    color: var(--tertiary-color);
-    font-weight: var(--font-semi-bold);
-    font-family: var(--heading-font); /* Updated to use Instrument Sans for headings */
+// Loading animation
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50%;
+    border-top-color: #3b82f6;
+    animation: spin 1s ease-in-out infinite;
 }
 
-ul {
-    list-style: none;
-}
-
-a {
-    text-decoration: none;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-/* =========  REUSABLE CODES  ========= */
-.section {
-    padding: 3.5rem 0 1rem;
-}
-
-.section__title,
-.section__title-center {
-    font-size: var(--h1-font-size);
-    margin-bottom: var(--mb-1-5);
-    line-height: 140%;
-}
-
-.section__title-center {
-    text-align: center;
-}
-
-.container {
-    max-width: 980px;
-    margin-left: var(--mb-0-75);
-    margin-right: var(--mb-0-75);
-}
-
-.grid {
-    display: grid;
-}
-
-.main {
-    overflow: hidden;
-}
-
-.btn {
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: 500;
-    background-color: var(--primary-color);
-    color: var(--white-color);
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
