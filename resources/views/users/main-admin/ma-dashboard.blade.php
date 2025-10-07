@@ -24,8 +24,9 @@
     <!-- Main Content -->
     <main class="flex-grow p-6 bg-gray-100">
         <div class="flex items-start mb-6">
-            <button @click="collapsed = !collapsed" class="p-2 rounded-md focus:outline-none mr-4">
-                <i class="ri-menu-line text-2xl" style="color: #444444;"></i>
+            <button x-on:click="collapsed = !collapsed" class="p-2 rounded-md focus:outline-none mr-4">
+
+            <i class="ri-menu-line text-2xl" style="color: #444444;"></i>
             </button>
             <div>
                 <h1 class="text-4xl font-bold">Dashboard Overview</h1>
@@ -37,7 +38,7 @@
 
         <!-- Analytics: same grid layout pattern as ma-voterRecord -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 transition-all"
-             :class="collapsed ? 'gap-6' : 'gap-3'">
+        >
 
             <!-- Total Voters -->
             <div class="bg-white p-4 rounded-lg shadow-md min-w-0 ring-1 ring-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition">

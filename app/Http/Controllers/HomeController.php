@@ -9,7 +9,7 @@ class HomeController extends Controller
     public function index()
     {
         // Pass an empty array or other data to the dashboard view
-        return view('users.user-client.user-default');
+        return view('users.main-admin.ma-dashboard');
     }
 
     public function dashboard()
