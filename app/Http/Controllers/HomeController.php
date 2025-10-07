@@ -9,7 +9,7 @@ class HomeController extends Controller
     public function index()
     {
         // Pass an empty array or other data to the dashboard view
-        return view('users.main-admin.ma-dashboard');
+        return view('users.user-client.user-default');
     }
 
     public function dashboard()
@@ -25,5 +25,10 @@ class HomeController extends Controller
     public function votingSettings()
     {
         return view('users.main-admin.ma-votingSettings');
+    }
+
+    public function createForm()
+    {
+        return view('users.main-admin.ma-createForm');
     }
 }

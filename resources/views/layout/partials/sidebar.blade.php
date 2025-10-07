@@ -56,8 +56,12 @@
                     </a>
                 </li>
                 <li class="mb-4 nav__items flex items-center justify-start">
-                    <a href="#" class="hover:text-gray-400 nav__link flex items-center text-left">
-                        <i class="ri-file-add-fill mr-2"></i>
+                    <a
+                        href="{{ route('ma-createForm') }}"
+                        class="hover:text-gray-400 nav__link flex items-center text-left"
+                        @click.prevent="loading = true; window.location.href = '{{ route('ma-createForm') }}';"
+                    >
+                        <i class="ri-file-list-3-fill mr-2"></i>
                         <span x-show="!collapsed">Create a Form</span>
                     </a>
                 </li>

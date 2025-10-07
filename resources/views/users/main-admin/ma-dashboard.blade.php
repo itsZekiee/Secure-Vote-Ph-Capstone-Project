@@ -5,10 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Secure Vote Ph - Dashboard</title>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Remix Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 <body>
@@ -107,7 +112,7 @@
                         <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-blue-500"></span>
                         <div class="border rounded px-3 py-2 text-sm">
                             <span class="font-medium">[08:20 AM]</span> Backup completed successfully
-                        </div>
+                        </div>php artisan
                     </li>
                     <li class="relative pl-8">
                         <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-amber-500"></span>
