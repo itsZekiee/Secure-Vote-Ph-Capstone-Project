@@ -9,24 +9,65 @@
             <ul class="nav__list">
                 <li class="mb-4 nav__items flex items-center justify-start" :class="request()->routeIs('voting.dashboard') ? 'active' : ''">
                     <a
-                        href="{{ route('ma-dashboard') }}"
+                        href="{{ route('dashboard') }}"
                         class="hover:text-gray-400 nav__link flex items-center text-left"
-                        @click.prevent="loading = true; window.location.href = '{{ route('ma-dashboard') }}';"
+                        @click.prevent="loading = true; window.location.href = '{{ route('dashboard') }}';"
                     >
                         <i class="ri-dashboard-fill mr-2"></i>
-                        <span x-show="!collapsed">Dashboard</span>
+                        <span
+                            x-show="!collapsed"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="font-medium tracking-wide"
+                        >
+                            Dashboard
+                        </span>
                     </a>
                 </li>
                 <li class="mb-4 nav__items flex items-center justify-start">
-                    <a href="#" class="hover:text-gray-400 nav__link flex items-center text-left">
-                        <i class="ri-group-fill mr-2"></i>
-                        <span x-show="!collapsed">Partylist</span>
+                    <a
+                        href="{{ route('ma-partylist-page') }}"
+                        class="hover:text-gray-400 nav__link flex items-center text-left"
+                        @click.prevent="loading = true; window.location.href = '{{ route('ma-partylist-page') }}';"
+                    >
+                        <i class="ri-team-fill mr-2"></i>
+                        <span
+                            x-show="!collapsed"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="font-medium tracking-wide"
+                        >
+                            Partylist
+                        </span>
                     </a>
                 </li>
                 <li class="mb-4 nav__items flex items-center justify-start">
-                    <a href="#" class="hover:text-gray-400 nav__link flex items-center text-left">
+                    <a
+                        href="{{ route('ma-candidate-page') }}"
+                        class="hover:text-gray-400 nav__link flex items-center text-left"
+                        @click.prevent="loading = true; window.location.href = '{{ route('ma-candidate-page') }}';"
+                    >
                         <i class="ri-user-star-fill mr-2"></i>
-                        <span x-show="!collapsed">Candidates</span>
+                        <span
+                            x-show="!collapsed"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="font-medium tracking-wide"
+                        >
+                            Candidate
+                        </span>
                     </a>
                 </li>
                 <li class="mb-4 nav__items flex items-center justify-start" :class="request()->routeIs('voting.voter-record') ? 'active' : ''">
@@ -35,8 +76,19 @@
                         class="hover:text-gray-400 nav__link flex items-center text-left"
                         @click.prevent="loading = true; window.location.href = '{{ route('ma-voterRecord') }}';"
                     >
-                        <i class="ri-file-list-3-fill mr-2"></i>
-                        <span x-show="!collapsed">Voter Record</span>
+                        <i class="ri-user-3-fill mr-2"></i>
+                        <span
+                            x-show="!collapsed"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="font-medium tracking-wide"
+                        >
+                            Registered Voters
+                        </span>
                     </a>
                 </li>
                 <li class="mb-4 nav__items flex items-center justify-start">
@@ -45,14 +97,40 @@
                         class="hover:text-gray-400 nav__link flex items-center text-left"
                         @click.prevent="loading = true; window.location.href = '{{ route('ma-votingSettings') }}';"
                     >
-                        <i class="ri-file-list-3-fill mr-2"></i>
-                        <span x-show="!collapsed">Voter Settings</span>
+                        <i class="ri-settings-3-fill mr-2"></i>
+                        <span
+                            x-show="!collapsed"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="font-medium tracking-wide"
+                        >
+                            Voter Settings
+                        </span>
                     </a>
                 </li>
                 <li class="mb-4 nav__items flex items-center justify-start">
-                    <a href="#" class="hover:text-gray-400 nav__link flex items-center text-left">
-                        <i class="ri-bar-chart-2-fill mr-2"></i>
-                        <span x-show="!collapsed">Analytics</span>
+                    <a
+                        href="{{ route('ma-analytics-page') }}"
+                        class="hover:text-gray-400 nav__link flex items-center text-left"
+                        @click.prevent="loading = true; window.location.href = '{{ route('ma-analytics-page') }}';"
+                    >
+                        <i class="ri-settings-3-fill mr-2"></i>
+                        <span
+                            x-show="!collapsed"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="font-medium tracking-wide"
+                        >
+                            Analytics
+                        </span>
                     </a>
                 </li>
                 <li class="mb-4 nav__items flex items-center justify-start">
@@ -61,8 +139,19 @@
                         class="hover:text-gray-400 nav__link flex items-center text-left"
                         @click.prevent="loading = true; window.location.href = '{{ route('ma-createForm') }}';"
                     >
-                        <i class="ri-file-list-3-fill mr-2"></i>
-                        <span x-show="!collapsed">Create a Form</span>
+                        <i class="ri-file-add-fill mr-2"></i>
+                        <span
+                            x-show="!collapsed"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 transform scale-95"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 transform scale-100"
+                            x-transition:leave-end="opacity-0 transform scale-95"
+                            class="font-medium tracking-wide"
+                        >
+                            Create a Form
+                        </span>
                     </a>
                 </li>
             </ul>

@@ -2,36 +2,36 @@
     <div class="container mx-auto px-4 py-3">
         <div class="flex items-center justify-between">
             <!-- Logo and Title Section -->
-            <div class="flex items-center space-x-3">
-                <div class="text-3xl" style="color: #1B1B1B;">
+            <div class="flex items-center gap-3">
+                <div class="text-3xl text-gray-900">
                     <i class="ri-shield-keyhole-fill"></i>
                 </div>
-                <div class="leading-tight">
-                    <h1 class="text-xl font-bold mb-0" style="color: #1B1B1B;">Secure Vote Ph</h1>
-                    <p class="text-sm mt-0" style="color: #1B1B1B;">Trusted Democracy</p>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 mb-0">Secure Vote Ph</h1>
+                    <p class="text-sm text-gray-700 mt-0">Trusted Democracy</p>
                 </div>
             </div>
 
             <!-- Navigation Items -->
             <nav class="hidden md:flex">
-                <ul class="flex space-x-8">
+                <ul class="flex gap-8">
                     <li>
-                        <a href="#geo" class="nav-link font-medium transition-colors duration-200" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'" onmouseout="this.style.color='#1B1B1B'">
+                        <a href="#geo" class="nav-link font-medium text-gray-900 hover:text-blue-900 focus:text-blue-900 transition-colors duration-200">
                             Geo
                         </a>
                     </li>
                     <li>
-                        <a href="#security" class="nav-link font-medium transition-colors duration-200" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'" onmouseout="this.style.color='#1B1B1B'">
+                        <a href="#security" class="nav-link font-medium text-gray-900 hover:text-blue-900 focus:text-blue-900 transition-colors duration-200">
                             Security
                         </a>
                     </li>
                     <li>
-                        <a href="#analytics" class="nav-link font-medium transition-colors duration-200" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'" onmouseout="this.style.color='#1B1B1B'">
+                        <a href="#analytics" class="nav-link font-medium text-gray-900 hover:text-blue-900 focus:text-blue-900 transition-colors duration-200">
                             Analytics
                         </a>
                     </li>
                     <li>
-                        <a href="#faqs" class="nav-link font-medium transition-colors duration-200" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'" onmouseout="this.style.color='#1B1B1B'">
+                        <a href="#faqs" class="nav-link font-medium text-gray-900 hover:text-blue-900 focus:text-blue-900 transition-colors duration-200">
                             FAQs
                         </a>
                     </li>
@@ -40,7 +40,7 @@
 
             <!-- Mobile Menu Button -->
             <div class="md:hidden">
-                <button id="mobile-menu-button" class="transition-all duration-300" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'" onmouseout="this.style.color='#1B1B1B'">
+                <button id="mobile-menu-button" class="text-gray-900 hover:text-blue-900 focus:text-blue-900 transition-colors duration-200" aria-label="Toggle menu">
                     <i class="ri-menu-line text-xl transition-transform duration-300"></i>
                 </button>
             </div>
@@ -51,22 +51,22 @@
             <nav class="mt-4 pb-4">
                 <ul class="space-y-3">
                     <li>
-                        <a href="#geo" class="nav-link block py-2 px-4 font-medium transition-all duration-200 rounded-lg text-center" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'; this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.color='#1B1B1B'; this.style.backgroundColor='transparent'">
+                        <a href="#geo" class="nav-link block py-2 px-4 font-medium text-gray-900 hover:text-blue-900 hover:bg-gray-100 focus:text-blue-900 focus:bg-gray-100 transition-all duration-200 rounded-lg text-center">
                             Geo
                         </a>
                     </li>
                     <li>
-                        <a href="#security" class="nav-link block py-2 px-4 font-medium transition-all duration-200 rounded-lg text-center" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'; this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.color='#1B1B1B'; this.style.backgroundColor='transparent'">
+                        <a href="#security" class="nav-link block py-2 px-4 font-medium text-gray-900 hover:text-blue-900 hover:bg-gray-100 focus:text-blue-900 focus:bg-gray-100 transition-all duration-200 rounded-lg text-center">
                             Security
                         </a>
                     </li>
                     <li>
-                        <a href="#analytics" class="nav-link block py-2 px-4 font-medium transition-all duration-200 rounded-lg text-center" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'; this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.color='#1B1B1B'; this.style.backgroundColor='transparent'">
+                        <a href="#analytics" class="nav-link block py-2 px-4 font-medium text-gray-900 hover:text-blue-900 hover:bg-gray-100 focus:text-blue-900 focus:bg-gray-100 transition-all duration-200 rounded-lg text-center">
                             Analytics
                         </a>
                     </li>
                     <li>
-                        <a href="#faqs" class="nav-link block py-2 px-4 font-medium transition-all duration-200 rounded-lg text-center" style="color: #1B1B1B;" onmouseover="this.style.color='#003153'; this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.color='#1B1B1B'; this.style.backgroundColor='transparent'">
+                        <a href="#faqs" class="nav-link block py-2 px-4 font-medium text-gray-900 hover:text-blue-900 hover:bg-gray-100 focus:text-blue-900 focus:bg-gray-100 transition-all duration-200 rounded-lg text-center">
                             FAQs
                         </a>
                     </li>
