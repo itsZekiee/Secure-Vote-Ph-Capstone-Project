@@ -4,114 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Secure Vote Ph - Voter's Record</title>
-
-    <!-- Google Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Remix Icon -->
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Remix Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
-    <!-- Tailwind CSS -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
                     }
                 }
             }
         }
     </script>
-    <!-- Alpine.js for interactivity -->
+    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-50 font-inter">
+<body class="bg-gray-50 font-sans">
 <div x-data="{ collapsed: false, loading: false }" class="flex min-h-screen">
     <!-- Sidebar -->
     @include('layout.partials.sidebar')
 
     <!-- Main Content -->
-    <main class="flex-grow p-8 bg-gray-50">
+    <main class="flex-1 p-4 lg:p-8">
         <!-- Header Section -->
-        <div class="flex flex-col sm:flex-row items-start gap-6 mb-8">
-            <button
-                @click="collapsed = !collapsed"
-                class="p-3 rounded-lg bg-white shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                aria-label="Toggle sidebar"
-            >
-                <i class="ri-menu-line text-2xl text-gray-700"></i>
+        <div class="flex items-center mb-8">
+            <button x-on:click="collapsed = !collapsed"
+                    class="p-2 rounded-xl bg-white shadow-sm border hover:bg-gray-50 transition-colors mr-4 lg:hidden">
+                <i class="ri-menu-line text-xl text-gray-600"></i>
             </button>
             <div class="flex-1">
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">Voters Record</h1>
-                <p class="mt-3 text-base text-gray-600 max-w-2xl leading-relaxed">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                        <i class="ri-user-search-line text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-3xl lg:text-4xl font-bold text-gray-900">Voters Record</h1>
+                </div>
+                <p class="text-gray-600 text-sm lg:text-base max-w-2xl">
                     A confidential database entry tracking an individual's election registration, voting history, and participation to verify eligibility and prevent fraud.
                 </p>
             </div>
         </div>
 
         <!-- Analytics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 transition-all duration-300 mb-8"
-             :class="collapsed ? 'gap-6' : 'gap-4'">
-
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
             <!-- Total Voters Card -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-200">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-lg font-semibold text-gray-900">Total Voters</span>
-                    <div class="p-2 bg-blue-50 rounded-lg">
-                        <i class="ri-group-fill text-2xl text-blue-600"></i>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Voters</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">{{ $totalVoters ?? '1,234' }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                        <i class="ri-group-fill text-blue-600 text-xl"></i>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-3xl font-bold text-gray-900 mb-1">{{ $totalVoters ?? '1,234' }}</span>
-                    <span class="text-sm text-gray-500">Registered voters</span>
+                <div class="mt-4">
+                    <span class="text-gray-500 text-sm">Registered voters</span>
                 </div>
             </div>
 
             <!-- Verified Voters Card -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-200">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-lg font-semibold text-gray-900">Verified Voters</span>
-                    <div class="p-2 bg-green-50 rounded-lg">
-                        <i class="ri-shield-check-fill text-2xl text-green-600"></i>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Verified Voters</p>
+                        <p class="text-2xl font-bold text-emerald-600 mt-1">{{ $verifiedVoters ?? '1,050' }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                        <i class="ri-shield-check-fill text-emerald-600 text-xl"></i>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-3xl font-bold text-gray-900 mb-1">{{ $verifiedVoters ?? '1,050' }}</span>
-                    <span class="text-sm text-gray-500">Identity confirmed</span>
+                <div class="mt-4">
+                    <span class="text-gray-500 text-sm">Identity confirmed</span>
                 </div>
             </div>
 
             <!-- Vote Cast Card -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-200">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-lg font-semibold text-gray-900">Vote Cast</span>
-                    <div class="p-2 bg-purple-50 rounded-lg">
-                        <i class="ri-checkbox-multiple-fill text-2xl text-purple-600"></i>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Vote Cast</p>
+                        <p class="text-2xl font-bold text-purple-600 mt-1">{{ $votesCast ?? '980' }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center">
+                        <i class="ri-checkbox-multiple-fill text-purple-600 text-xl"></i>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-3xl font-bold text-gray-900 mb-1">{{ $votesCast ?? '980' }}</span>
-                    <span class="text-sm text-gray-500">Ballots submitted</span>
+                <div class="mt-4">
+                    <span class="text-gray-500 text-sm">Ballots submitted</span>
                 </div>
             </div>
 
             <!-- Turnout Rate Card -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-200">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-lg font-semibold text-gray-900">Turnout Rate</span>
-                    <div class="p-2 bg-orange-50 rounded-lg">
-                        <i class="ri-pie-chart-2-fill text-2xl text-orange-600"></i>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Turnout Rate</p>
+                        <p class="text-2xl font-bold text-orange-600 mt-1">{{ $turnoutRate ?? '79%' }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center">
+                        <i class="ri-pie-chart-2-fill text-orange-600 text-xl"></i>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-3xl font-bold text-gray-900 mb-1">{{ $turnoutRate ?? '79%' }}</span>
-                    <span class="text-sm text-gray-500">Of registered voters</span>
+                <div class="mt-4">
+                    <span class="text-gray-500 text-sm">Of registered voters</span>
                 </div>
             </div>
         </div>
 
         <!-- Voter Directory Section -->
-        <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Voter Directory</h2>
                 <p class="text-sm text-gray-600">View and manage all registered voters</p>
@@ -129,7 +144,7 @@
                             name="q"
                             value="{{ request('q') }}"
                             placeholder="Search voters..."
-                            class="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                            class="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-3 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                         />
                     </div>
                 </div>
@@ -139,7 +154,7 @@
                     <select
                         id="filter"
                         name="by"
-                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                        class="w-full border border-gray-200 rounded-lg py-3 px-4 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     >
                         <option value="">All Fields</option>
                         <option value="name" {{ request('by')=='name' ? 'selected' : '' }}>Full Name</option>
@@ -152,7 +167,7 @@
                 <div class="flex gap-3">
                     <button
                         type="submit"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-6 py-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                         Search
                     </button>

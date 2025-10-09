@@ -5,183 +5,223 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Secure Vote Ph - Dashboard</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Remix Icons -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body>
+<body class="bg-slate-50 font-sans">
 @auth
-    <div x-data="{ collapsed: false, loading: false }" class="flex">
+    <div x-data="{
+        collapsed: false,
+        stats: {
+            voters: 1234,
+            candidates: 25,
+            votes: 980,
+            daysLeft: 15
+        }
+    }" class="flex min-h-screen">
         <!-- Sidebar -->
         @include('layout.partials.sidebar')
 
         <!-- Main Content -->
-        <main class="flex-grow p-6 bg-gray-100">
-            <!-- Success Message Display -->
-            @if(session('success'))
-                <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <div class="flex items-start mb-6">
-                <button x-on:click="collapsed = !collapsed" class="p-2 rounded-md focus:outline-none mr-4">
-                    <i class="ri-menu-line text-2xl" style="color: #444444;"></i>
+        <main class="flex-1 p-4 lg:p-8">
+            <!-- Header Section -->
+            <div class="flex items-center mb-8">
+                <button x-on:click="collapsed = !collapsed"
+                        class="p-2 rounded-xl bg-white shadow-sm border hover:bg-gray-50 transition-colors mr-4 lg:hidden">
+                    <i class="ri-menu-line text-xl text-gray-600"></i>
                 </button>
-                <div>
-                    <h1 class="text-4xl font-bold">Dashboard Overview</h1>
-                    <p class="mt-1 text-sm text-gray-500 max-w-xl">
-                        Welcome back, {{ auth()->user()->name }}! Here's what's happening with your voting system.
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                            <i class="ri-dashboard-line text-white text-lg"></i>
+                        </div>
+                        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900">Dashboard</h1>
+                    </div>
+                    <p class="text-gray-600 text-sm lg:text-base max-w-2xl">
+                        Welcome back, {{ auth()->user()->name }}. Monitor election progress, track voting statistics, and manage system activities.
                     </p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all">
-
-                <!-- Total Voters -->
-                <div class="bg-white p-4 rounded-lg shadow-md min-w-0 ring-1 ring-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-lg font-semibold">Total Voters</span>
-                        <i class="ri-group-fill text-2xl text-indigo-400"></i>
+            <!-- Success Message -->
+            @if(session('success'))
+                <div x-data="{ show: true }" x-show="show" x-transition
+                     class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-2">
+                        <i class="ri-check-circle-line text-emerald-600"></i>
+                        {{ session('success') }}
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-3xl font-bold text-gray-800 mb-1">1,234</span>
-                        <span class="text-sm text-gray-500">Form: Presidential Election 2024</span>
+                    <button @click="show = false" class="text-emerald-600 hover:text-emerald-800">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+            @endif
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Voters</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1" x-text="stats.voters.toLocaleString()"></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+                            <i class="ri-group-fill text-indigo-600 text-xl"></i>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Active Candidates -->
-                <div class="bg-white p-4 rounded-lg shadow-md min-w-0 ring-1 ring-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-lg font-semibold">Active Candidates</span>
-                        <i class="ri-user-star-fill text-2xl text-emerald-400"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-3xl font-bold text-gray-800 mb-1">25</span>
-                        <span class="text-sm text-gray-500">Form: Presidential Election 2024</span>
-                    </div>
-                </div>
-
-                <!-- Total Cast Votes -->
-                <div class="bg-white p-4 rounded-lg shadow-md min-w-0 ring-1 ring-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-lg font-semibold">Total Cast Votes</span>
-                        <i class="ri-checkbox-multiple-fill text-2xl text-blue-400"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-3xl font-bold text-gray-800 mb-1">980</span>
-                        <span class="text-sm text-gray-500">Form: Presidential Election 2024</span>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Active Candidates</p>
+                            <p class="text-2xl font-bold text-emerald-600 mt-1" x-text="stats.candidates"></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+                            <i class="ri-user-star-fill text-emerald-600 text-xl"></i>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Days Until Election -->
-                <div class="bg-white p-4 rounded-lg shadow-md min-w-0 ring-1 ring-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-lg font-semibold">Days Until Election</span>
-                        <i class="ri-calendar-event-fill text-2xl text-rose-400"></i>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Votes Cast</p>
+                            <p class="text-2xl font-bold text-blue-600 mt-1" x-text="stats.votes.toLocaleString()"></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                            <i class="ri-checkbox-multiple-fill text-blue-600 text-xl"></i>
+                        </div>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-3xl font-bold text-gray-800 mb-1">15</span>
-                        <span class="text-sm text-gray-500">Form: Presidential Election 2024</span>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Days Remaining</p>
+                            <p class="text-2xl font-bold text-rose-600 mt-1" x-text="stats.daysLeft"></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center">
+                            <i class="ri-calendar-event-fill text-rose-600 text-xl"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Modernized panels -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-                <!-- Recent Activity (Timeline) -->
-                <section class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
-                    <h2 class="text-xl font-bold">Recent Activity</h2>
-                    <p class="text-xs text-gray-500 mb-4">Latest system activities and updates</p>
+            <!-- Charts and Activity Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Voting Progress Chart -->
+                <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Voting Progress</h2>
+                            <p class="text-sm text-gray-500">Real-time voting statistics</p>
+                        </div>
+                        <select class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white">
+                            <option>Last 7 days</option>
+                            <option>Last 30 days</option>
+                            <option>All time</option>
+                        </select>
+                    </div>
 
-                    <ul class="space-y-5 max-h-72 overflow-y-auto">
-                        <li class="relative pl-8">
-                            <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-indigo-500"></span>
-                            <div class="border rounded px-3 py-2 text-sm">
-                                <span class="font-medium">[10:30 AM]</span> New voter registered: John Doe
-                            </div>
-                        </li>
-                        <li class="relative pl-8">
-                            <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-emerald-500"></span>
-                            <div class="border rounded px-3 py-2 text-sm">
-                                <span class="font-medium">[09:45 AM]</span> Candidate Jane Smith approved
-                            </div>
-                        </li>
-                        <li class="relative pl-8">
-                            <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-blue-500"></span>
-                            <div class="border rounded px-3 py-2 text-sm">
-                                <span class="font-medium">[08:20 AM]</span> Backup completed successfully
-                            </div>
-                        </li>
-                        <li class="relative pl-8">
-                            <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-amber-500"></span>
-                            <div class="border rounded px-3 py-2 text-sm">
-                                <span class="font-medium">[Yesterday, 05:15 PM]</span> Voting settings updated
-                            </div>
-                        </li>
-                        <li class="relative pl-8">
-                            <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-teal-500"></span>
-                            <div class="border rounded px-3 py-2 text-sm">
-                                <span class="font-medium">[Yesterday, 03:00 PM]</span> New partylist added: Green Party
-                            </div>
-                        </li>
-                        <li class="relative pl-8">
-                            <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-gray-500"></span>
-                            <div class="border rounded px-3 py-2 text-sm">
-                                <span class="font-medium">[2 days ago, 11:30 AM]</span> User admin created a new form
-                            </div>
-                        </li>
-                        <li class="relative pl-8">
-                            <span class="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-gray-500"></span>
-                            <div class="border rounded px-3 py-2 text-sm">
-                                <span class="font-medium">[2 days ago, 09:00 AM]</span> System maintenance completed
-                            </div>
-                        </li>
-                    </ul>
-                </section>
+                    <!-- Mock Chart Area -->
+                    <div class="h-64 bg-gray-50 rounded-xl flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="ri-bar-chart-line text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-gray-500">Chart visualization area</p>
+                            <p class="text-sm text-gray-400">Integration with Chart.js or similar</p>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- System Status -->
-                <section class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-bold">System Status</h2>
-                    <p class="text-xs text-gray-500 mb-4">Current system health and alerts</p>
+                <!-- Recent Activity Timeline -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Recent Activity</h2>
+                            <p class="text-sm text-gray-500">Latest system events</p>
+                        </div>
+                        <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">View all</button>
+                    </div>
 
-                    <ul class="space-y-3 text-sm">
-                        <li class="flex items-center justify-between border rounded px-3 py-2">
-                            <div class="flex items-center gap-2">
-                                <i class="ri-server-fill text-indigo-500"></i>
-                                <span class="font-medium">Server</span>
+                    <div class="space-y-4 max-h-80 overflow-y-auto">
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                <i class="ri-user-add-line text-indigo-600 text-sm"></i>
                             </div>
-                            <span class="px-2 py-0.5 rounded text-green-700 bg-green-100">Online</span>
-                        </li>
-                        <li class="flex items-center justify-between border rounded px-3 py-2">
-                            <div class="flex items-center gap-2">
-                                <i class="ri-database-2-fill text-emerald-500"></i>
-                                <span class="font-medium">Database</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-gray-900 font-medium">New voter registered</p>
+                                <p class="text-sm text-gray-500">John Doe joined the system</p>
+                                <p class="text-xs text-gray-400 mt-1">10:30 AM</p>
                             </div>
-                            <span class="px-2 py-0.5 rounded text-green-700 bg-green-100">Connected</span>
-                        </li>
-                        <li class="flex items-center justify-between border rounded px-3 py-2">
-                            <div class="flex items-center gap-2">
-                                <i class="ri-cloud-fill text-blue-500"></i>
-                                <span class="font-medium">Last Backup</span>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                                <i class="ri-user-star-line text-emerald-600 text-sm"></i>
                             </div>
-                            <span>Today, 03:00 AM</span>
-                        </li>
-                        <li class="flex items-center justify-between border rounded px-3 py-2">
-                            <div class="flex items-center gap-2">
-                                <i class="ri-user-smile-fill text-rose-500"></i>
-                                <span class="font-medium">Active Users</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-gray-900 font-medium">Candidate approved</p>
+                                <p class="text-sm text-gray-500">Jane Smith was approved</p>
+                                <p class="text-xs text-gray-400 mt-1">09:45 AM</p>
                             </div>
-                            <span>12</span>
-                        </li>
-                    </ul>
-                </section>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="ri-database-2-line text-blue-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-gray-900 font-medium">Backup completed</p>
+                                <p class="text-sm text-gray-500">System backup successful</p>
+                                <p class="text-xs text-gray-400 mt-1">08:20 AM</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                                <i class="ri-settings-3-line text-amber-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-gray-900 font-medium">Settings updated</p>
+                                <p class="text-sm text-gray-500">Voting configuration changed</p>
+                                <p class="text-xs text-gray-400 mt-1">Yesterday, 5:15 PM</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-group-line text-teal-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-gray-900 font-medium">New partylist added</p>
+                                <p class="text-sm text-gray-500">Green Party registered</p>
+                                <p class="text-xs text-gray-400 mt-1">Yesterday, 3:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
