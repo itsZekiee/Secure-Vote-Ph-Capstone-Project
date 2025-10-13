@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Secure Vote Ph - Create Voting Form</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -104,17 +105,6 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Form Category</label>
-                        <select x-model="form.category"
-                                class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
-                            <option value="">Select Category</option>
-                            <option value="election">🗳️ Election</option>
-                            <option value="survey">📊 Survey</option>
-                            <option value="feedback">💬 Feedback</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-2">
                         <label class="block text-sm font-semibold text-slate-700">Description <span class="text-red-500">*</span></label>
                         <textarea x-model="form.description"
                                   class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
@@ -165,7 +155,7 @@
             </form>
 
             <!-- Panel 2: Positions & Candidates -->
-            <form x-show="step === 2" @submit.prevent="nextStep"
+            <form x-show="step === 2" @submit.prevent="createForm"
                   x-transition:enter="transition ease-out duration-300"
                   x-transition:enter-start="opacity-0 transform translate-x-8"
                   x-transition:enter-end="opacity-100 transform translate-x-0"
@@ -250,10 +240,12 @@
                         <i class="ri-arrow-left-line"></i>
                         Back
                     </button>
-                    <button type="submit"
-                            class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2">
-                        Create Form
-                        <i class="ri-check-line"></i>
+                    <button type="submit" :disabled="isLoading"
+                            class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 disabled:opacity-50">
+                        <span x-show="!isLoading">Create Form</span>
+                        <span x-show="isLoading">Creating...</span>
+                        <i class="ri-check-line" x-show="!isLoading"></i>
+                        <i class="ri-loader-line animate-spin" x-show="isLoading"></i>
                     </button>
                 </div>
             </form>
@@ -326,7 +318,8 @@
 
                 <div class="flex justify-center mt-8">
                     <button type="button"
-                            class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl transition-colors">
+                            class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl transition-colors"
+                            @click="window.location.href = '{{ route('dashboard') }}'">
                         Go to Dashboard
                     </button>
                 </div>
@@ -339,6 +332,7 @@
     function formWizard() {
         return {
             step: 1,
+            isLoading: false,
             form: {
                 title: '',
                 organization: '',
@@ -349,15 +343,46 @@
                 end: ''
             },
             positions: [{ name: '', candidates: [''] }],
-            shareLink: 'https://securevoteph.com/vote/your-form-id',
+            shareLink: '',
 
             nextStep() {
                 if (this.step === 1) {
                     if (!this.validateBasicInfo()) return;
                     this.step = 2;
-                } else if (this.step === 2) {
-                    if (!this.validatePositions()) return;
-                    this.step = 3;
+                }
+            },
+
+            async createForm() {
+                if (!this.validatePositions()) return;
+
+                this.isLoading = true;
+
+                try {
+                    const response = await fetch('/api/forms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            form: this.form,
+                            positions: this.positions
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        this.shareLink = `${window.location.origin}/vote/${result.form_id}`;
+                        this.step = 3;
+                    } else {
+                        this.showNotification(result.message || 'Error creating form', 'error');
+                    }
+                } catch (error) {
+                    this.showNotification('Error creating form. Please try again.', 'error');
+                    console.error('Error:', error);
+                } finally {
+                    this.isLoading = false;
                 }
             },
 
@@ -414,8 +439,7 @@
             },
 
             showNotification(message, type) {
-                // You can integrate with a toast library here
-                alert(message);
+                alert(message); // Replace with proper toast notification
             }
         }
     }

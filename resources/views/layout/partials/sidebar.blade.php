@@ -149,14 +149,19 @@
                      class="flex-1">
                     <div class="font-semibold text-white text-sm">{{ auth()->user()->name }}</div>
                     <div class="text-xs text-white">{{ auth()->user()->email }}</div>
-
                 </div>
+                <!-- Logout Icon -->
                 <i x-show="!collapsed || isMobile"
                    x-transition:enter="transition ease-out duration-200 delay-100"
                    x-transition:enter-start="opacity-0"
                    x-transition:enter-end="opacity-100"
-                   class="ri-logout-box-line text-white hover:text-red-400 transition-colors"></i>
+                   class="ri-logout-box-line text-white hover:text-red-400 transition-colors"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"></i>
             </div>
+            <!-- Hidden Logout Form -->
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
     </div>
 </aside>

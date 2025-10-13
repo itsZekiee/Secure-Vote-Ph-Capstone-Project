@@ -70,6 +70,21 @@
                                 Learn More
                             </button>
                         </div>
+                        @if(session('status'))
+                            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mt-6">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        @if(session('success'))
+                            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mt-6">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        @if(session('logged_out'))
+                            <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl mt-6">
+                                You have been logged out.
+                            </div>
+                        @endif
                     </div>
                     <!-- Right Visual -->
                     <div class="relative">
@@ -308,6 +323,20 @@
                 </div>
             </div>
         </section>
+
+
+
+        <!-- Geographic Section -->
+        <!-- ... (rest of your sections unchanged) ... -->
+
+        <!-- Security Section -->
+        <!-- ... (rest of your sections unchanged) ... -->
+
+        <!-- Analytics Section -->
+        <!-- ... (rest of your sections unchanged) ... -->
+
+        <!-- FAQ Section -->
+        <!-- ... (rest of your sections unchanged) ... -->
 
         <!-- Sign In/Up Section -->
         <section id="auth" class="px-6 lg:px-8 py-20 bg-gradient-to-br from-gray-50 to-white min-h-screen" x-data="{ showSignUp: false }">

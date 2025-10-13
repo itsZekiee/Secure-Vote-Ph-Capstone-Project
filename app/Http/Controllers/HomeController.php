@@ -8,7 +8,6 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Pass an empty array or other data to the dashboard view
         return view('user-welcome');
     }
 
@@ -22,30 +21,64 @@ class HomeController extends Controller
         return view('users.main-admin.ma-dashboard', compact('user'));
     }
 
-
     public function voterRecord()
     {
+        if (!auth()->check()) {
+            return redirect()->route('home');
+        }
+
         return view('users.main-admin.ma-voterRecord');
     }
+
     public function votingSettings()
     {
+        if (!auth()->check()) {
+            return redirect()->route('home');
+        }
+
         return view('users.main-admin.ma-votingSettings');
     }
 
     public function createForm()
     {
+        if (!auth()->check()) {
+            return redirect()->route('home');
+        }
+
         return view('users.main-admin.ma-createForm');
     }
+
     public function candidates()
     {
+        if (!auth()->check()) {
+            return redirect()->route('home');
+        }
+
         return view('users.main-admin.ma-candidatePage');
     }
+
     public function partylist()
     {
+        if (!auth()->check()) {
+            return redirect()->route('home');
+        }
+
         return view('users.main-admin.ma-partylistPage');
     }
+
     public function analytics()
     {
+        if (!auth()->check()) {
+            return redirect()->route('home');
+        }
+
         return view('users.main-admin.ma-analyticsPage');
     }
+
+    public function userdefault()
+    {
+        return view('users.user-client.user-default');
+    }
+
+
 }
