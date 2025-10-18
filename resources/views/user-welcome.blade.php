@@ -271,6 +271,7 @@
                         Frequently Asked Questions
                     </h2>
                 </div>
+                Biography
                 <div class="space-y-6">
                     <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
                         <button @click="openFaq = openFaq === 1 ? null : 1"
@@ -323,20 +324,6 @@
                 </div>
             </div>
         </section>
-
-
-
-        <!-- Geographic Section -->
-        <!-- ... (rest of your sections unchanged) ... -->
-
-        <!-- Security Section -->
-        <!-- ... (rest of your sections unchanged) ... -->
-
-        <!-- Analytics Section -->
-        <!-- ... (rest of your sections unchanged) ... -->
-
-        <!-- FAQ Section -->
-        <!-- ... (rest of your sections unchanged) ... -->
 
         <!-- Sign In/Up Section -->
         <section id="auth" class="px-6 lg:px-8 py-20 bg-gradient-to-br from-gray-50 to-white min-h-screen" x-data="{ showSignUp: false }">
