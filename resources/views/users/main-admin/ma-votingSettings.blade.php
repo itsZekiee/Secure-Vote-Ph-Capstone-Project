@@ -14,9 +14,8 @@
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <!-- Google Maps API -->
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhPfKgc7qU6KTCb3QxP0AYCcFhhzg1c0Q&libraries=places,geometry&callback=initMap">
-    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&libraries=places,geometry&callback=initMap"></script>
+
 
     <script>
         tailwind.config = {
@@ -531,6 +530,7 @@
                             </button>
                         </div>
                     </div>
+                    </div>
                 </form>
             </div>
 
@@ -885,7 +885,6 @@
             </div>
         </div>
     </main>
-</div>
 </div>
 <script>
     function geoConfig() {
@@ -1465,8 +1464,6 @@
     }
 
 </script>
-
-
 </body>
 </html>
 
