@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VoteController;
+use App\Http\Controllers\Auth\GoogleController; // <-- ADD THIS
+use App\Http\Controllers\Auth\GoogleOneTapController; // <-- ADD THIS
 
 // Public routes
 // Remove the comment to enable the welcome page
@@ -21,6 +23,17 @@ Route::get('/vote/{formId}', [VoteController::class, 'show'])->name('vote.show')
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// ----------------------------------------------------------------------
+// Google SSO (Socialite) Routes
+// ----------------------------------------------------------------------
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+
+// ----------------------------------------------------------------------
+// Google One Tap Routes (POST request from the front-end)
+// ----------------------------------------------------------------------
+Route::post('auth/google/one-tap/callback', [GoogleOneTapController::class, 'handleCallback']);
 
 // Protected routes - require authentication
 Route::middleware(['auth'])->group(function () {

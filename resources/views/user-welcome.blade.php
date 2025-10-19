@@ -378,6 +378,24 @@
                             <button type="submit" class="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
                                 Sign In
                             </button>
+
+                            <!-- Google SSO Button -->
+                            <div class="mt-6">
+                                <div id="g_id_onload"
+                                     data-client_id="22952197713-bnf9d78ndf30r0u3ct3ehk152aljq3ji.apps.googleusercontent.com"
+                                     data-context="signin"
+                                     data-ux_mode="popup"
+                                     data-auto_prompt="false">
+                                </div>
+                                <div class="g_id_signin"
+                                     data-type="standard"
+                                     data-shape="rectangular"
+                                     data-theme="outline"
+                                     data-text="signin_with"
+                                     data-size="large"
+                                     data-logo_alignment="left">
+                                </div>
+                            </div>
                         </form>
 
                         <p class="text-center text-sm text-gray-500 mt-6">
@@ -425,6 +443,8 @@
         </section>
     </div>
     @include('layout.partials.footer')
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </main>
 </body>
 </html>
