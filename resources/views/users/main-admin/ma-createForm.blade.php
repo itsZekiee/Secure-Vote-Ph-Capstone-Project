@@ -7,8 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -187,9 +189,9 @@
                                         Position Name <span class="text-red-500">*</span>
                                     </label>
                                     <input type="text" x-model="position.name"
-                                           class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                                           placeholder="e.g., President, Vice President"
-                                           maxlength="60" required>
+                                           class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                           placeholder="e.g., President, Vice President, Secretary"
+                                           required>
                                 </div>
 
                                 <div>
@@ -198,18 +200,16 @@
                                     </label>
                                     <div class="space-y-3">
                                         <template x-for="(candidate, j) in position.candidates" :key="j">
-                                            <div class="flex items-center gap-3">
-                                                <div class="flex-1 relative">
-                                                    <input type="text" x-model="position.candidates[j]"
-                                                           class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                                                           :placeholder="`Candidate ${j + 1} name`"
-                                                           maxlength="60" required>
-                                                </div>
+                                            <div class="flex gap-3">
+                                                <input type="text" x-model="position.candidates[j]"
+                                                       class="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                                       :placeholder="`Candidate ${j + 1} name`"
+                                                       required>
                                                 <button type="button"
-                                                        class="w-10 h-10 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
+                                                        class="w-12 h-12 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl flex items-center justify-center transition-colors"
                                                         @click="removeCandidate(i, j)"
                                                         x-show="position.candidates.length > 1">
-                                                    <i class="ri-close-line text-sm"></i>
+                                                    <i class="ri-delete-bin-line"></i>
                                                 </button>
                                             </div>
                                         </template>
@@ -284,6 +284,20 @@
                                :max="form.start">
                         <div class="text-xs text-slate-500">
                             Set a deadline for voter registration. Leave empty to allow registration until voting starts.
+                        </div>
+                    </div>
+
+                    <!-- New field for admin access emails -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Admin Access Emails</label>
+                        <textarea x-model="settings.adminEmails"
+                                  class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                                  rows="3"
+                                  placeholder="e.g., admin@university.edu, supervisor@company.com (separate with commas)"
+                                  maxlength="500"></textarea>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Email addresses that can edit and view voting records. Leave empty to restrict access to form creator only.</span>
+                            <span x-text="`${settings.adminEmails.length}/500`"></span>
                         </div>
                     </div>
 
@@ -518,6 +532,7 @@
             settings: {
                 allowedDomains: '',
                 registrationDeadline: '',
+                adminEmails: '',
                 enableGeoRestriction: false,
                 locationSearch: '',
                 selectedLocation: null,
@@ -601,7 +616,6 @@
                 this.settings.locationSearch = location.display_name;
                 this.searchResults = [];
 
-                // Initialize map after location is selected
                 this.$nextTick(() => {
                     this.initializeMap();
                 });
@@ -622,7 +636,6 @@
                 const lat = parseFloat(this.settings.selectedLocation.lat);
                 const lon = parseFloat(this.settings.selectedLocation.lon);
 
-                // Initialize Leaflet map
                 if (this.map) {
                     this.map.remove();
                 }
@@ -633,10 +646,7 @@
                     attribution: '© OpenStreetMap contributors'
                 }).addTo(this.map);
 
-                // Add marker
                 this.marker = L.marker([lat, lon]).addTo(this.map);
-
-                // Add radius circle
                 this.updateMapRadius();
             },
 
@@ -648,12 +658,10 @@
                 const radius = parseFloat(this.settings.radius) || 1;
                 const radiusInMeters = this.settings.radiusUnit === 'km' ? radius * 1000 : radius;
 
-                // Remove existing circle
                 if (this.circle) {
                     this.map.removeLayer(this.circle);
                 }
 
-                // Add new circle
                 this.circle = L.circle([lat, lon], {
                     color: '#3b82f6',
                     fillColor: '#3b82f6',
@@ -661,7 +669,6 @@
                     radius: radiusInMeters
                 }).addTo(this.map);
 
-                // Fit map to circle bounds
                 this.map.fitBounds(this.circle.getBounds(), { padding: [20, 20] });
             },
 
@@ -705,6 +712,19 @@
                     return false;
                 }
 
+                // Validate admin emails format
+                if (this.settings.adminEmails.trim()) {
+                    const emails = this.settings.adminEmails.split(',').map(email => email.trim());
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                    for (const email of emails) {
+                        if (email && !emailRegex.test(email)) {
+                            this.showNotification(`Invalid email format: ${email}`, 'error');
+                            return false;
+                        }
+                    }
+                }
+
                 if (this.settings.enableGeoRestriction) {
                     if (!this.settings.selectedLocation) {
                         this.showNotification('Please select a location for geo-restrictions.', 'error');
@@ -746,15 +766,11 @@
             },
 
             showNotification(message, type) {
-                alert(message); // Replace with proper toast notification
+                alert(message);
             }
         }
     }
 </script>
-
-<!-- Add Leaflet CSS and JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 </body>
 </html>
