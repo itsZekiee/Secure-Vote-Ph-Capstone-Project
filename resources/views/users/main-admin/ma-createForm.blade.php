@@ -35,12 +35,9 @@
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 font-inter min-h-screen">
 <div x-data="{ collapsed: false }" class="flex min-h-screen">
     @include('layout.partials.sidebar')
-    <main class="flex-grow p-4 md:p-8">
+    <main class="flex-grow p-4 md:p-8 mb-12">
         <!-- Header -->
         <div class="flex items-center mb-8">
-            <button @click="collapsed = !collapsed" class="p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow mr-4 border border-slate-200">
-                <i class="ri-menu-line text-xl text-slate-600"></i>
-            </button>
             <div>
                 <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-1">Create Voting Form</h1>
                 <p class="text-slate-500">Design and configure a new voting form for elections</p>
@@ -49,7 +46,7 @@
 
         <div x-data="formWizard()" class="max-w-4xl mx-auto">
             <!-- Progress Indicator -->
-            <div class="mb-8">
+            <div class="mb-12">
                 <div class="flex items-center justify-between mb-4">
                     <template x-for="i in 4" :key="i">
                         <div class="flex items-center" :class="i < 4 ? 'flex-1' : ''">
