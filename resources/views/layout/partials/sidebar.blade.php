@@ -95,7 +95,7 @@
             </a>
 
             <!-- Candidates -->
-            <a href="{{ route('ma-candidate-page') }}"
+            <a href="{{ route('ma-candidate') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-xl text-white hover:bg-orange-50 hover:text-orange-600 transition-all group {{ request()->routeIs('ma-candidates') ? 'bg-orange-50 text-orange-600' : '' }}">
                 <i class="ri-user-star-line text-xl"></i>
                 <span x-show="!collapsed || isMobile"
@@ -106,7 +106,7 @@
             </a>
 
             <!-- Partylists -->
-            <a href="{{ route('ma-partylist-page') }}"
+            <a href="{{ route('ma-partylist') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-xl text-white hover:bg-indigo-50 hover:text-indigo-600 transition-all group {{ request()->routeIs('ma-partylists') ? 'bg-indigo-50 text-indigo-600' : '' }}">
                 <i class="ri-flag-line text-xl"></i>
                 <span x-show="!collapsed || isMobile"

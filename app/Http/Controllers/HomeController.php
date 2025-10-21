@@ -48,22 +48,16 @@ class HomeController extends Controller
         return view('users.main-admin.ma-createForm');
     }
 
-    public function candidates()
+    public function candidateManagement()
     {
-        if (!auth()->check()) {
-            return redirect()->route('home');
-        }
-
-        return view('users.main-admin.ma-candidatePage');
+        // Pass any required data as needed
+        return view('users.main-admin.ma-candidate');
     }
 
-    public function partylist()
+    public function partylistManagement()
     {
-        if (!auth()->check()) {
-            return redirect()->route('home');
-        }
-
-        return view('users.main-admin.ma-partylistPage');
+        // Pass any required data as needed
+        return view('users.main-admin.ma-parylist');
     }
 
     public function analytics()
