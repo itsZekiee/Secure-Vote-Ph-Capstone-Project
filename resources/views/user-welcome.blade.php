@@ -271,7 +271,6 @@
                         Frequently Asked Questions
                     </h2>
                 </div>
-                Biography
                 <div class="space-y-6">
                     <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
                         <button @click="openFaq = openFaq === 1 ? null : 1"

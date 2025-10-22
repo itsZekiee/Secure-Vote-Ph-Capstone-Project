@@ -68,10 +68,10 @@ class HomeController extends Controller
 
         return view('users.main-admin.ma-analyticsPage');
     }
-    /*
+
     public function userdefault()
     {
         return view('users.user-client.user-default');
     }
-    */
+
 }

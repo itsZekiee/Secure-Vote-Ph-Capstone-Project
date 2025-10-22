@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Secure Vote Ph - Create Voting Form</title>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Fonts and Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Remix Icon -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&libraries=places,geometry&callback=initMap"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -32,8 +38,10 @@
         }
     </script>
 </head>
+
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 font-inter min-h-screen">
 <div x-data="{ collapsed: false }" class="flex min-h-screen">
+    <!-- Sidebar -->
     @include('layout.partials.sidebar')
     <main class="flex-grow p-4 md:p-8 mb-12">
         <!-- Header -->
@@ -251,36 +259,29 @@
                   x-transition:enter-start="opacity-0 transform translate-x-8"
                   x-transition:enter-end="opacity-100 transform translate-x-0"
                   class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-200">
-
                 <div class="flex items-center mb-6">
                     <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mr-4">
                         <i class="ri-settings-3-line text-xl text-primary-600"></i>
                     </div>
+
                     <div>
                         <h2 class="text-2xl font-semibold text-slate-800">Form Settings</h2>
                         <p class="text-slate-500 text-sm">Configure advanced settings and restrictions</p>
                     </div>
                 </div>
-
+                <!-- Allowed Email Domain -->
                 <div class="space-y-6">
                     <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Allowed Email Domains</label>
-                        <input type="text" x-model="settings.allowedDomains"
+                        <label class="block text-sm font-semibold text-slate-700">
+                            Allowed Email Domains
+                            <span class="text-xs text-slate-400 font-normal">(comma-separated, e.g. up.edu.ph, myschool.edu)</span>
+                        </label>
+                        <input type="text"
+                               x-model="settings.allowedDomains"
                                class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                               placeholder="e.g., @university.edu, @company.com (separate with commas)"
-                               maxlength="200">
+                               placeholder="e.g. up.edu.ph, myschool.edu">
                         <div class="text-xs text-slate-500">
-                            Specify email domains that are allowed to register and vote. Leave empty to allow all domains.
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Registration Deadline</label>
-                        <input type="datetime-local" x-model="settings.registrationDeadline"
-                               class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                               :max="form.start">
-                        <div class="text-xs text-slate-500">
-                            Set a deadline for voter registration. Leave empty to allow registration until voting starts.
+                            Only users with emails from these domains can register. Leave blank to allow all.
                         </div>
                     </div>
 
@@ -297,116 +298,163 @@
                             <span x-text="`${settings.adminEmails.length}/500`"></span>
                         </div>
                     </div>
-
-                    <div class="space-y-4">
+                    <div class="space-y-2">
                         <label class="block text-sm font-semibold text-slate-700">Geo-Location Restrictions</label>
-
-                        <div class="space-y-3">
+                        <div class="space-y-3" x-data="{ ...geoConfig(), geoEnabled: settings.enableGeoRestriction, centerLat: '', centerLng: '', radiusKm: 1 }" x-init="
+                            $watch('geoEnabled', value => settings.enableGeoRestriction = value);
+                            $watch('centerLat', value => settings.centerLat = value);
+                            $watch('centerLng', value => settings.centerLng = value);
+                            $watch('radiusKm', value => settings.radius = value);
+                            $watch('selectedAddress', value => settings.selectedAddress = value);
+                            $watch('locationDetails', value => settings.locationDetails = value);
+                            init();
+                        ">
                             <div class="flex items-center">
-                                <input type="checkbox" x-model="settings.enableGeoRestriction" id="enableGeo"
+                                <input type="checkbox" x-model="geoEnabled" id="enableGeo"
                                        class="w-5 h-5 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
                                 <label for="enableGeo" class="ml-3 text-sm font-medium text-slate-700">
                                     Enable geographical restrictions
                                 </label>
                             </div>
-
-                            <div x-show="settings.enableGeoRestriction"
+                            <div x-show="geoEnabled"
                                  x-transition:enter="transition ease-out duration-200"
                                  x-transition:enter-start="opacity-0 transform scale-95"
                                  x-transition:enter-end="opacity-100 transform scale-100"
                                  class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-6">
-
-                                <!-- Location Search -->
-                                <div class="space-y-3">
-                                    <label class="block text-sm font-medium text-slate-700">Search Location</label>
-                                    <div class="relative">
-                                        <input type="text" x-model="settings.locationSearch"
-                                               @input="searchLocation"
-                                               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                                               placeholder="Search for a location (city, address, landmark)">
-                                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                            <i class="ri-search-line text-slate-400"></i>
+                                <!-- Center Point Configuration -->
+                                <div class="space-y-4">
+                                    <h3 class="text-base font-medium text-gray-900 flex items-center gap-2">
+                                        <i class="ri-focus-3-line text-primary-600"></i>
+                                        Voting Center Location
+                                    </h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">Center Latitude</label>
+                                            <input type="number" step="any" x-model="centerLat"
+                                                   @input="updateMapCenter()"
+                                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                                   placeholder="14.5995">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">Center Longitude</label>
+                                            <input type="number" step="any" x-model="centerLng"
+                                                   @input="updateMapCenter()"
+                                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                                   placeholder="120.9842">
                                         </div>
                                     </div>
-
-                                    <!-- Search Results -->
-                                    <div x-show="searchResults.length > 0"
-                                         class="bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                                        <template x-for="result in searchResults" :key="result.place_id">
-                                            <button type="button"
-                                                    @click="selectLocation(result)"
-                                                    class="w-full px-4 py-3 text-left hover:bg-slate-50 border-b border-slate-100 last:border-b-0 transition-colors">
-                                                <div class="font-medium text-slate-800" x-text="result.display_name"></div>
-                                                <div class="text-xs text-slate-500" x-text="`${result.lat}, ${result.lon}`"></div>
-                                            </button>
-                                        </template>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button type="button" @click="getCurrentLocation()"
+                                                class="inline-flex items-center gap-2 px-4 py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
+                                            <i class="ri-crosshair-line"></i>
+                                            Get Current Location
+                                        </button>
+                                        <button type="button" @click="searchLocation()"
+                                                class="inline-flex items-center gap-2 px-4 py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
+                                            <i class="ri-search-line"></i>
+                                            Search Address
+                                        </button>
                                     </div>
-                                </div>
-
-                                <!-- Selected Location Display -->
-                                <div x-show="settings.selectedLocation"
-                                     class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                                    <div class="flex items-start justify-between">
-                                        <div class="flex-1">
-                                            <div class="font-medium text-blue-800">Selected Location</div>
-                                            <div class="text-sm text-blue-600 mt-1" x-text="settings.selectedLocation?.display_name"></div>
-                                            <div class="text-xs text-blue-500 mt-1">
-                                                Coordinates: <span x-text="`${settings.selectedLocation?.lat}, ${settings.selectedLocation?.lon}`"></span>
+                                    <div x-show="showSearch" class="space-y-2">
+                                        <div class="flex gap-2">
+                                            <input id="address_search" type="text"
+                                                   placeholder="Search for schools, hospitals, malls, barangays, cities..."
+                                                   class="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/20 transition-all duration-200">
+                                            <button type="button" @click="performSearch()"
+                                                    class="px-4 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
+                                                <i class="ri-search-line"></i>
+                                            </button>
+                                        </div>
+                                        <div class="text-xs text-gray-500 px-2">
+                                            <p class="mb-1"><strong>Examples:</strong></p>
+                                            <div class="flex flex-wrap gap-2">
+                                                <span class="px-2 py-1 bg-gray-100 rounded">University of the Philippines Diliman</span>
+                                                <span class="px-2 py-1 bg-gray-100 rounded">SM Mall of Asia</span>
+                                                <span class="px-2 py-1 bg-gray-100 rounded">Makati City Hall</span>
                                             </div>
                                         </div>
-                                        <button type="button" @click="clearSelectedLocation"
-                                                class="text-blue-600 hover:text-blue-800 p-1">
-                                            <i class="ri-close-line"></i>
-                                        </button>
+                                        <div id="search-suggestions" class="hidden bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto"></div>
                                     </div>
                                 </div>
-
-                                <!-- Radius Settings -->
-                                <div class="grid md:grid-cols-2 gap-4">
-                                    <div class="space-y-2">
-                                        <label class="block text-sm font-medium text-slate-700">Radius</label>
-                                        <input type="number" x-model="settings.radius"
-                                               min="1" step="0.1"
-                                               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                                               placeholder="Enter radius">
-                                    </div>
-                                    <div class="space-y-2">
-                                        <label class="block text-sm font-medium text-slate-700">Unit</label>
-                                        <select x-model="settings.radiusUnit"
-                                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
-                                            <option value="km">Kilometers (km)</option>
-                                            <option value="m">Meters (m)</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Map Preview -->
-                                <div class="space-y-3" x-show="settings.selectedLocation">
-                                    <label class="block text-sm font-medium text-slate-700">Map Preview</label>
-                                    <div class="relative bg-slate-200 rounded-lg overflow-hidden" style="height: 300px;">
-                                        <div id="mapPreview" class="w-full h-full"></div>
-                                        <div class="absolute top-3 right-3 bg-white px-3 py-2 rounded-lg shadow-md text-sm">
-                                            <span class="font-medium text-slate-700">Radius: </span>
-                                            <span x-text="`${settings.radius || 0} ${settings.radiusUnit}`"
-                                                  class="text-primary-600 font-semibold"></span>
+                                <!-- Radius Configuration -->
+                                <div class="space-y-4">
+                                    <h3 class="text-base font-medium text-gray-900 flex items-center gap-2">
+                                        <i class="ri-radio-button-line text-primary-600"></i>
+                                        Allowed Voting Radius
+                                    </h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">Radius (kilometers)</label>
+                                            <input type="number" min="0.1" step="0.1" x-model="radiusKm"
+                                                   @input="updateRadius()"
+                                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                                                   placeholder="10">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-medium text-gray-700">Radius in Miles</label>
+                                            <input type="text" readonly :value="(radiusKm * 0.621371).toFixed(2)"
+                                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-100 text-gray-500">
                                         </div>
                                     </div>
-
-                                    <!-- Map Controls -->
-                                    <div class="flex gap-2">
-                                        <button type="button" @click="updateMapRadius"
-                                                class="px-3 py-2 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded-lg transition-colors text-sm font-medium">
-                                            <i class="ri-refresh-line mr-1"></i>
-                                            Update Radius
-                                        </button>
-                                        <button type="button" @click="centerMap"
-                                                class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium">
-                                            <i class="ri-focus-3-line mr-1"></i>
-                                            Center Map
-                                        </button>
+                                </div>
+                                <!-- Quick Preset Buttons -->
+                                <div class="space-y-4">
+                                    <h4 class="text-sm font-medium text-gray-700">Quick Presets</h4>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button type="button" @click="setRadius(1)" class="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">1 km</button>
+                                        <button type="button" @click="setRadius(5)" class="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">5 km</button>
+                                        <button type="button" @click="setRadius(10)" class="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">10 km</button>
+                                        <button type="button" @click="setRadius(25)" class="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">25 km</button>
+                                        <button type="button" @click="setRadius(50)" class="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">50 km</button>
                                     </div>
                                 </div>
-
+                                <!-- Location Preview -->
+                                <div class="space-y-4" x-show="centerLat && centerLng">
+                                    <h3 class="text-base font-medium text-gray-900 flex items-center gap-2">
+                                        <i class="ri-eye-line text-primary-600"></i>
+                                        Location Preview
+                                    </h3>
+                                    <div class="p-4 bg-primary-50 rounded-xl border border-primary-200">
+                                        <div x-show="selectedAddress" class="mb-4 p-3 bg-white rounded-lg border border-primary-200">
+                                            <h4 class="font-medium text-gray-900 text-sm mb-1">Selected Location</h4>
+                                            <p class="text-sm text-gray-700" x-text="selectedAddress"></p>
+                                            <div x-show="locationDetails?.name" class="mt-1">
+                                                <span class="text-xs px-2 py-1 bg-primary-100 text-primary-700 rounded" x-text="locationDetails.name"></span>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
+                                            <div>
+                                                <span class="font-medium text-gray-700">Coordinates:</span>
+                                                <span x-text="`${parseFloat(centerLat).toFixed(6)}, ${parseFloat(centerLng).toFixed(6)}`" class="text-primary-600"></span>
+                                            </div>
+                                            <div>
+                                                <span class="font-medium text-gray-700">Radius:</span>
+                                                <span x-text="`${radiusKm} km`" class="text-primary-600"></span>
+                                            </div>
+                                            <div>
+                                                <span class="font-medium text-gray-700">Coverage:</span>
+                                                <span x-text="`${(radiusKm * 0.621371).toFixed(2)} miles`" class="text-primary-600"></span>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <h4 class="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                                <i class="ri-map-2-line text-primary-600"></i>
+                                                Interactive Map
+                                            </h4>
+                                            <div class="relative">
+                                                <div id="google-map" class="w-full h-96 rounded-xl border border-gray-200 bg-gray-100"></div>
+                                                <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-gray-600 shadow-sm">
+                                                    <i class="ri-information-line mr-1"></i>
+                                                    Click map, drag marker, or resize circle to adjust settings
+                                                </div>
+                                                <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-gray-600 shadow-sm">
+                                                    <i class="ri-focus-3-line mr-1"></i>
+                                                    Coverage area: <span x-text="`${Math.round(Math.PI * Math.pow(radiusKm, 2) * 100) / 100} km²`"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="text-xs text-slate-500 bg-amber-50 p-3 rounded border border-amber-200">
                                     <i class="ri-information-line text-amber-600 mr-1"></i>
                                     Voters will be required to allow location access. Only users within the specified radius from the selected location can register and vote.
@@ -415,7 +463,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="flex justify-between mt-8">
                     <button type="button"
                             class="px-8 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition-colors flex items-center gap-2"
@@ -512,6 +559,471 @@
 </div>
 
 <script>
+    function geoConfig() {
+        return {
+            showSearch: false,
+            map: null,
+            circle: null,
+            marker: null,
+            autocomplete: null,
+            searchResults: [],
+            showSuggestions: false,
+            selectedAddress: '',
+            locationDetails: null,
+            init() {
+                this.$nextTick(() => {
+                    this.$watch('geoEnabled', (newValue) => {
+                        if (newValue) {
+                            setTimeout(() => {
+                                if (this.centerLat && this.centerLng) {
+                                    this.initializeMap();
+                                } else {
+                                    this.centerLat = '14.5995';
+                                    this.centerLng = '120.9842';
+                                    this.initializeMap();
+                                }
+                            }, 200);
+                        }
+                    });
+                    if (this.geoEnabled) {
+                        setTimeout(() => {
+                            if (this.centerLat && this.centerLng) {
+                                this.initializeMap();
+                            }
+                        }, 200);
+                    }
+                });
+            },
+            getCurrentLocation() {
+                if (!navigator.geolocation) {
+                    this.showLocationError('Geolocation is not supported by this browser.');
+                    return;
+                }
+                const button = event.target.closest('button');
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Getting location...';
+                button.disabled = true;
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        this.centerLat = position.coords.latitude.toFixed(6);
+                        this.centerLng = position.coords.longitude.toFixed(6);
+                        await this.reverseGeocode(position.coords.latitude, position.coords.longitude);
+                        if (!this.map) {
+                            setTimeout(() => this.initializeMap(), 100);
+                        } else {
+                            this.updateMapCenter();
+                        }
+                        button.innerHTML = originalContent;
+                        button.disabled = false;
+                    },
+                    (error) => {
+                        let errorMessage = 'Unable to get your current location.';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = 'Location access denied. Please enable location permissions and try again.'; break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = 'Location information unavailable. Please check your GPS settings.'; break;
+                            case error.TIMEOUT:
+                                errorMessage = 'Location request timed out. Please try again.'; break;
+                        }
+                        this.showLocationError(errorMessage);
+                        button.innerHTML = originalContent;
+                        button.disabled = false;
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+                );
+            },
+            searchLocation() {
+                this.showSearch = !this.showSearch;
+                if (this.showSearch) {
+                    this.$nextTick(() => {
+                        const searchInput = document.getElementById('address_search');
+                        if (searchInput) {
+                            searchInput.focus();
+                            this.setupAdvancedSearch(searchInput);
+                        }
+                    });
+                } else {
+                    this.clearSearchResults();
+                }
+            },
+            setupAdvancedSearch(input) {
+                if (!window.google?.maps?.places) return;
+                if (this.autocomplete) {
+                    google.maps.event.clearInstanceListeners(this.autocomplete);
+                }
+                this.autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ['establishment', 'geocode'],
+                    componentRestrictions: { country: 'ph' },
+                    fields: ['geometry', 'formatted_address', 'name', 'place_id', 'types', 'address_components']
+                });
+                this.autocomplete.addListener('place_changed', () => {
+                    const place = this.autocomplete.getPlace();
+                    if (place.geometry?.location) {
+                        this.setLocationFromPlace(place);
+                    }
+                });
+                input.addEventListener('input', this.debounce((e) => {
+                    const query = e.target.value.trim();
+                    if (query.length >= 3) {
+                        this.performTextSearch(query);
+                    } else {
+                        this.clearSearchResults();
+                    }
+                }, 300));
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.clearSearchResults();
+                    }
+                });
+            },
+            async performTextSearch(query) {
+                if (!window.google?.maps) return;
+                try {
+                    const service = new google.maps.places.PlacesService(document.createElement('div'));
+                    const request = {
+                        query: query,
+                        location: new google.maps.LatLng(14.5995, 120.9842),
+                        radius: 50000,
+                        fields: ['geometry', 'formatted_address', 'name', 'place_id', 'types', 'rating']
+                    };
+                    service.textSearch(request, (results, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                            this.searchResults = results.slice(0, 8).map(place => ({
+                                name: place.name,
+                                address: place.formatted_address,
+                                location: place.geometry.location,
+                                placeId: place.place_id,
+                                types: place.types,
+                                rating: place.rating
+                            }));
+                            this.showSearchSuggestions();
+                        } else {
+                            this.clearSearchResults();
+                        }
+                    });
+                } catch (error) {
+                    this.clearSearchResults();
+                }
+            },
+            showSearchSuggestions() {
+                const container = document.getElementById('search-suggestions');
+                if (!container || this.searchResults.length === 0) return;
+                container.innerHTML = this.searchResults.map(result => `
+                <div class="suggestion-item p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                     data-lat="${result.location.lat()}"
+                     data-lng="${result.location.lng()}"
+                     data-name="${result.name}"
+                     data-address="${result.address}">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="ri-map-pin-line text-primary-600 text-sm"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-gray-900 text-sm truncate">${result.name}</h4>
+                            <p class="text-xs text-gray-500 truncate">${result.address}</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                ${result.rating ? `
+                                    <div class="flex items-center gap-1">
+                                        <i class="ri-star-fill text-yellow-400 text-xs"></i>
+                                        <span class="text-xs text-gray-600">${result.rating}</span>
+                                    </div>
+                                ` : ''}
+                                <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
+                                    ${this.getPlaceTypeLabel(result.types)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+                container.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const lat = parseFloat(item.dataset.lat);
+                        const lng = parseFloat(item.dataset.lng);
+                        const name = item.dataset.name;
+                        const address = item.dataset.address;
+                        this.setLocationFromCoordinates(lat, lng, name, address);
+                        this.clearSearchResults();
+                        document.getElementById('address_search').value = '';
+                    });
+                });
+                container.classList.remove('hidden');
+                this.showSuggestions = true;
+            },
+            getPlaceTypeLabel(types) {
+                const typeMap = {
+                    'school': 'School',
+                    'university': 'University',
+                    'hospital': 'Hospital',
+                    'shopping_mall': 'Mall',
+                    'local_government_office': 'Government',
+                    'establishment': 'Business',
+                    'point_of_interest': 'Landmark'
+                };
+                for (const type of types) {
+                    if (typeMap[type]) return typeMap[type];
+                }
+                return 'Location';
+            },
+            async setLocationFromPlace(place) {
+                this.centerLat = place.geometry.location.lat().toFixed(6);
+                this.centerLng = place.geometry.location.lng().toFixed(6);
+                this.selectedAddress = place.formatted_address;
+                this.locationDetails = {
+                    name: place.name,
+                    address: place.formatted_address,
+                    placeId: place.place_id,
+                    types: place.types
+                };
+                if (!this.map) {
+                    setTimeout(() => this.initializeMap(), 100);
+                } else {
+                    this.updateMapCenter();
+                }
+                this.showSearch = false;
+                document.getElementById('address_search').value = '';
+            },
+            async setLocationFromCoordinates(lat, lng, name = '', address = '') {
+                this.centerLat = lat.toFixed(6);
+                this.centerLng = lng.toFixed(6);
+                if (!address) {
+                    await this.reverseGeocode(lat, lng);
+                } else {
+                    this.selectedAddress = address;
+                    this.locationDetails = { name, address };
+                }
+                if (!this.map) {
+                    setTimeout(() => this.initializeMap(), 100);
+                } else {
+                    this.updateMapCenter();
+                }
+            },
+            async reverseGeocode(lat, lng) {
+                if (!window.google?.maps) return;
+                try {
+                    const geocoder = new google.maps.Geocoder();
+                    const response = await new Promise((resolve, reject) => {
+                        geocoder.geocode({
+                            location: { lat, lng },
+                            language: 'en'
+                        }, (results, status) => {
+                            if (status === 'OK') resolve(results);
+                            else reject(status);
+                        });
+                    });
+                    if (response && response[0]) {
+                        this.selectedAddress = response[0].formatted_address;
+                        this.locationDetails = {
+                            address: response[0].formatted_address,
+                            components: response[0].address_components
+                        };
+                    }
+                } catch (error) {}
+            },
+            performSearch() {
+                const address = document.getElementById('address_search')?.value?.trim();
+                if (!address) {
+                    this.showLocationError('Please enter an address to search.');
+                    return;
+                }
+                if (!window.google?.maps) {
+                    this.showLocationError('Google Maps API is not loaded. Please try again.');
+                    return;
+                }
+                const button = event.target.closest('button');
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="ri-loader-4-line animate-spin"></i>';
+                button.disabled = true;
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({
+                    address: address,
+                    componentRestrictions: { country: 'PH' },
+                    language: 'en'
+                }, async (results, status) => {
+                    if (status === 'OK' && results?.[0]) {
+                        const location = results[0].geometry.location;
+                        await this.setLocationFromCoordinates(
+                            location.lat(),
+                            location.lng(),
+                            '',
+                            results[0].formatted_address
+                        );
+                        this.showSearch = false;
+                        document.getElementById('address_search').value = '';
+                    } else {
+                        let errorMessage = 'Address not found. Please try a different search term.';
+                        switch(status) {
+                            case 'ZERO_RESULTS':
+                                errorMessage = 'No results found. Try searching for nearby landmarks or use more specific terms.'; break;
+                            case 'OVER_QUERY_LIMIT':
+                                errorMessage = 'Search quota exceeded. Please try again later.'; break;
+                            case 'REQUEST_DENIED':
+                                errorMessage = 'Search request denied. Please check API configuration.'; break;
+                        }
+                        this.showLocationError(errorMessage);
+                    }
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                });
+            },
+            clearSearchResults() {
+                this.searchResults = [];
+                this.showSuggestions = false;
+                const container = document.getElementById('search-suggestions');
+                if (container) {
+                    container.classList.add('hidden');
+                    container.innerHTML = '';
+                }
+            },
+            showLocationError(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+                notification.innerHTML = `
+                <div class="flex items-start gap-2">
+                    <i class="ri-error-warning-line text-red-600 mt-0.5"></i>
+                    <div class="text-sm">${message}</div>
+                </div>
+            `;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 5000);
+            },
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+            setRadius(km) {
+                this.radiusKm = km;
+                this.updateRadius();
+            },
+            updateMapCenter() {
+                if (!this.map || !this.centerLat || !this.centerLng) return;
+                const center = new google.maps.LatLng(parseFloat(this.centerLat), parseFloat(this.centerLng));
+                this.map.setCenter(center);
+                this.map.setZoom(15);
+                if (this.marker) {
+                    this.marker.setPosition(center);
+                } else {
+                    this.createMarker(center);
+                }
+                if (this.circle) {
+                    this.circle.setCenter(center);
+                } else {
+                    this.createCircle(center);
+                }
+            },
+            updateRadius() {
+                if (!this.circle) return;
+                this.circle.setRadius(this.radiusKm * 1000);
+                if (this.map) {
+                    const bounds = this.circle.getBounds();
+                    if (bounds) {
+                        this.map.fitBounds(bounds);
+                    }
+                }
+            },
+            createMarker(center) {
+                if (this.marker) {
+                    this.marker.setMap(null);
+                }
+                this.marker = new google.maps.Marker({
+                    position: center,
+                    map: this.map,
+                    draggable: true,
+                    title: 'Voting Center - Drag to reposition',
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 12,
+                        fillColor: '#3b82f6',
+                        fillOpacity: 1,
+                        strokeColor: '#ffffff',
+                        strokeWeight: 3
+                    }
+                });
+                this.marker.addListener('dragend', async () => {
+                    const position = this.marker.getPosition();
+                    this.centerLat = position.lat().toFixed(6);
+                    this.centerLng = position.lng().toFixed(6);
+                    await this.reverseGeocode(position.lat(), position.lng());
+                    if (this.circle) {
+                        this.circle.setCenter(position);
+                    }
+                });
+            },
+            createCircle(center) {
+                if (this.circle) {
+                    this.circle.setMap(null);
+                }
+                this.circle = new google.maps.Circle({
+                    strokeColor: '#3b82f6',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#3b82f6',
+                    fillOpacity: 0.15,
+                    map: this.map,
+                    center: center,
+                    radius: this.radiusKm * 1000,
+                    editable: true
+                });
+                this.circle.addListener('radius_changed', () => {
+                    const newRadius = this.circle.getRadius() / 1000;
+                    this.radiusKm = Math.round(newRadius * 100) / 100;
+                });
+                this.circle.addListener('center_changed', async () => {
+                    const newCenter = this.circle.getCenter();
+                    this.centerLat = newCenter.lat().toFixed(6);
+                    this.centerLng = newCenter.lng().toFixed(6);
+                    await this.reverseGeocode(newCenter.lat(), newCenter.lng());
+                    if (this.marker) {
+                        this.marker.setPosition(newCenter);
+                    }
+                });
+            },
+            initializeMap() {
+                if (!window.google?.maps) return;
+                const mapContainer = document.getElementById('google-map');
+                if (!mapContainer) return;
+                if (this.map) {
+                    this.map = null;
+                }
+                const center = new google.maps.LatLng(
+                    parseFloat(this.centerLat) || 14.5995,
+                    parseFloat(this.centerLng) || 120.9842
+                );
+                this.map = new google.maps.Map(mapContainer, {
+                    zoom: 15,
+                    center: center,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    styles: [
+                        {
+                            featureType: 'poi.business',
+                            elementType: 'labels',
+                            stylers: [{ visibility: 'simplified' }]
+                        }
+                    ],
+                    mapTypeControl: true,
+                    streetViewControl: true,
+                    fullscreenControl: true,
+                    zoomControl: true
+                });
+                this.createMarker(center);
+                this.createCircle(center);
+                this.map.addListener('click', async (event) => {
+                    await this.setLocationFromCoordinates(
+                        event.latLng.lat(),
+                        event.latLng.lng()
+                    );
+                });
+            }
+        };
+    }
     function formWizard() {
         return {
             step: 1,
@@ -531,18 +1043,13 @@
                 registrationDeadline: '',
                 adminEmails: '',
                 enableGeoRestriction: false,
-                locationSearch: '',
-                selectedLocation: null,
+                centerLat: '',
+                centerLng: '',
                 radius: 1,
-                radiusUnit: 'km'
+                selectedAddress: '',
+                locationDetails: null
             },
             shareLink: '',
-            searchResults: [],
-            searchTimeout: null,
-            map: null,
-            marker: null,
-            circle: null,
-
             nextStep() {
                 if (this.step === 1) {
                     if (!this.validateBasicInfo()) return;
@@ -552,12 +1059,9 @@
                     this.step = 3;
                 }
             },
-
             async createForm() {
                 if (!this.validateSettings()) return;
-
                 this.isLoading = true;
-
                 try {
                     const response = await fetch('/api/forms', {
                         method: 'POST',
@@ -571,9 +1075,7 @@
                             settings: this.settings
                         })
                     });
-
                     const result = await response.json();
-
                     if (response.ok) {
                         this.shareLink = `${window.location.origin}/vote/${result.form_id}`;
                         this.step = 4;
@@ -582,101 +1084,10 @@
                     }
                 } catch (error) {
                     this.showNotification('Error creating form. Please try again.', 'error');
-                    console.error('Error:', error);
                 } finally {
                     this.isLoading = false;
                 }
             },
-
-            searchLocation() {
-                clearTimeout(this.searchTimeout);
-
-                if (this.settings.locationSearch.length < 3) {
-                    this.searchResults = [];
-                    return;
-                }
-
-                this.searchTimeout = setTimeout(async () => {
-                    try {
-                        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.settings.locationSearch)}&limit=5`);
-                        const results = await response.json();
-                        this.searchResults = results;
-                    } catch (error) {
-                        console.error('Search error:', error);
-                        this.searchResults = [];
-                    }
-                }, 500);
-            },
-
-            selectLocation(location) {
-                this.settings.selectedLocation = location;
-                this.settings.locationSearch = location.display_name;
-                this.searchResults = [];
-
-                this.$nextTick(() => {
-                    this.initializeMap();
-                });
-            },
-
-            clearSelectedLocation() {
-                this.settings.selectedLocation = null;
-                this.settings.locationSearch = '';
-                if (this.map) {
-                    this.map.remove();
-                    this.map = null;
-                }
-            },
-
-            initializeMap() {
-                if (!this.settings.selectedLocation) return;
-
-                const lat = parseFloat(this.settings.selectedLocation.lat);
-                const lon = parseFloat(this.settings.selectedLocation.lon);
-
-                if (this.map) {
-                    this.map.remove();
-                }
-
-                this.map = L.map('mapPreview').setView([lat, lon], 13);
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(this.map);
-
-                this.marker = L.marker([lat, lon]).addTo(this.map);
-                this.updateMapRadius();
-            },
-
-            updateMapRadius() {
-                if (!this.map || !this.settings.selectedLocation) return;
-
-                const lat = parseFloat(this.settings.selectedLocation.lat);
-                const lon = parseFloat(this.settings.selectedLocation.lon);
-                const radius = parseFloat(this.settings.radius) || 1;
-                const radiusInMeters = this.settings.radiusUnit === 'km' ? radius * 1000 : radius;
-
-                if (this.circle) {
-                    this.map.removeLayer(this.circle);
-                }
-
-                this.circle = L.circle([lat, lon], {
-                    color: '#3b82f6',
-                    fillColor: '#3b82f6',
-                    fillOpacity: 0.2,
-                    radius: radiusInMeters
-                }).addTo(this.map);
-
-                this.map.fitBounds(this.circle.getBounds(), { padding: [20, 20] });
-            },
-
-            centerMap() {
-                if (!this.map || !this.settings.selectedLocation) return;
-
-                const lat = parseFloat(this.settings.selectedLocation.lat);
-                const lon = parseFloat(this.settings.selectedLocation.lon);
-                this.map.setView([lat, lon], 13);
-            },
-
             validateBasicInfo() {
                 if (!this.form.title || !this.form.organization || !this.form.description || !this.form.start || !this.form.end) {
                     this.showNotification('Please fill all required fields.', 'error');
@@ -692,7 +1103,6 @@
                 }
                 return true;
             },
-
             validatePositions() {
                 for (const pos of this.positions) {
                     if (!pos.name || pos.candidates.some(c => !c.trim())) {
@@ -702,18 +1112,14 @@
                 }
                 return true;
             },
-
             validateSettings() {
                 if (this.settings.registrationDeadline && this.settings.registrationDeadline >= this.form.start) {
                     this.showNotification('Registration deadline must be before voting start time.', 'error');
                     return false;
                 }
-
-                // Validate admin emails format
                 if (this.settings.adminEmails.trim()) {
                     const emails = this.settings.adminEmails.split(',').map(email => email.trim());
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
                     for (const email of emails) {
                         if (email && !emailRegex.test(email)) {
                             this.showNotification(`Invalid email format: ${email}`, 'error');
@@ -721,9 +1127,8 @@
                         }
                     }
                 }
-
                 if (this.settings.enableGeoRestriction) {
-                    if (!this.settings.selectedLocation) {
+                    if (!this.settings.centerLat || !this.settings.centerLng) {
                         this.showNotification('Please select a location for geo-restrictions.', 'error');
                         return false;
                     }
@@ -732,41 +1137,36 @@
                         return false;
                     }
                 }
-
                 return true;
             },
-
             addPosition() {
                 this.positions.push({ name: '', candidates: [''] });
             },
-
             removePosition(i) {
                 if (this.positions.length > 1) {
                     this.positions.splice(i, 1);
                 }
             },
-
             addCandidate(i) {
                 this.positions[i].candidates.push('');
             },
-
             removeCandidate(i, j) {
                 if (this.positions[i].candidates.length > 1) {
                     this.positions[i].candidates.splice(j, 1);
                 }
             },
-
             copyLink() {
                 navigator.clipboard.writeText(this.shareLink).then(() => {
                     this.showNotification('Link copied to clipboard!', 'success');
                 });
             },
-
             showNotification(message, type) {
                 alert(message);
             }
         }
     }
+</script>
+</body>
 </script>
 
 </body>
