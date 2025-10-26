@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ElectionForm2 extends Model
+class ElectionForm3 extends Model
 {
     use HasFactory;
 
-    protected $table = 'election_form_2';
+    protected $table = 'election_form_3';
 
     protected $fillable = [
         'form1_id',
-        'position',
-        'candidates'
+        'allowed_domain',
+        'admin_access_emails',
     ];
 
     protected $casts = [
-        'candidates' => 'array'
+        'admin_access_emails' => 'array', // automatically cast JSON to PHP array
     ];
 
     public function form1()

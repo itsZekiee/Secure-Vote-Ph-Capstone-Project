@@ -8,6 +8,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PartylistController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\GoogleOneTapController;
+use App\Http\Controllers\ElectionFormController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -29,6 +30,14 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 
 // Google One Tap Routes
 Route::post('auth/google/one-tap/callback', [GoogleOneTapController::class, 'handleCallback']);
+
+
+// Election Form Routes 
+Route::post('/api/forms', [ElectionFormController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+
+
 
 // Protected routes - require authentication
 Route::middleware(['auth'])->group(function () {
