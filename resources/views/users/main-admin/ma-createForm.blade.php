@@ -102,12 +102,28 @@
                                    placeholder="e.g., Student Government Election 2024"
                                    maxlength="100" required>
                         </div>
+
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-slate-700">Organization Name <span class="text-red-500">*</span></label>
-                            <input type="text" x-model="form.organization"
-                                   class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                                   placeholder="e.g., University of the Philippines"
-                                   maxlength="100" required>
+
+                            <select x-model="form.organizationSelected"
+                                    @change="form.organization = $event.target.value === 'other' ? '' : $event.target.value"
+                                    class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors bg-white"
+                                    required>
+                                <option value="" disabled selected>Select organization</option>
+                                <option value="University of the Philippines">University of the Philippines</option>
+                                <option value="Ateneo de Manila University">Ateneo de Manila University</option>
+                                <option value="De La Salle University">De La Salle University</option>
+                                <option value="other">Other (enter below)</option>
+                            </select>
+
+                            <input x-show="form.organizationSelected === 'other'"
+                                   x-cloak
+                                   type="text" x-model="form.organization"
+                                   class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors mt-3"
+                                   placeholder="Enter organization name"
+                                   maxlength="100"
+                                   required>
                         </div>
                     </div>
 
@@ -1031,6 +1047,7 @@
             form: {
                 title: '',
                 organization: '',
+                organizationSelected: '',
                 category: '',
                 description: '',
                 instructions: '',

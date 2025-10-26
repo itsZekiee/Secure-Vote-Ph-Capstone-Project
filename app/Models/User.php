@@ -15,7 +15,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'email_verified_at',
+        'role',
+        'is_verified',
     ];
 
     protected $hidden = [
@@ -25,7 +26,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'is_verified' => 'boolean',
     ];
 
     // Relationship with OAuth providers

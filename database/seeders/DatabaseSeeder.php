@@ -12,24 +12,35 @@ class DatabaseSeeder extends Seeder
     {
         // Create admin user
         User::create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'email' => 'admin@securevoteph.com',
-            'password' => Hash::make('password'),
-            'role' => 'super_admin',
+            'name' => 'niel ezequiel',
+            'email' => 'niel@securevoteph.com',
+            'password' => Hash::make('pass1234'),
+            'role' => 'main_admin',
             'is_verified' => true,
             'email_verified_at' => now(),
         ]);
 
         // Create test voter
         User::create([
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'voter@test.com',
-            'password' => Hash::make('password'),
+            'name' => 'normal user',
+            'email' => 'voter@securevoteph.com',
+            'password' => Hash::make('pass1234'),
             'role' => 'voter',
             'is_verified' => true,
             'email_verified_at' => now(),
         ]);
+
+        // Create test voter
+        User::create([
+            'name' => 'ejie boy',
+            'email' => 'ejieboy@securevoteph.com',
+            'password' => Hash::make('pass1234'),
+            'role' => 'voter',
+            'is_verified' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $this->call(AdminUserSeeder::class);
     }
+    
 }
