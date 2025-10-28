@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Secure Vote Ph - Create Voting Form</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Remix Icon -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Google Maps JS -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -49,7 +55,7 @@
 
         <div x-data="formWizard()" class="max-w-4xl mx-auto">
             <!-- Progress Indicator -->
-            <div class="mb-8">
+            <div class="mb-12">
                 <div class="flex items-center justify-between mb-4">
                     <template x-for="i in 4" :key="i">
                         <div class="flex items-center" :class="i < 4 ? 'flex-1' : ''">
@@ -624,29 +630,54 @@
             clearSelectedLocation() {
                 this.settings.selectedLocation = null;
                 this.settings.locationSearch = '';
-                if (this.map) {
-                    this.map.remove();
-                    this.map = null;
+                if (this.marker) {
+                    this.marker.setMap(null);
+                    this.marker = null;
                 }
+                if (this.circle) {
+                    this.circle.setMap(null);
+                    this.circle = null;
+                }
+                this.map = null;
+                const el = document.getElementById('mapPreview');
+                if (el) el.innerHTML = '';
             },
 
             initializeMap() {
                 if (!this.settings.selectedLocation) return;
 
+                if (typeof google === 'undefined' || !google.maps) {
+                    this.showNotification('Google Maps API not loaded. Check your API key and network.', 'error');
+                    return;
+                }
+
                 const lat = parseFloat(this.settings.selectedLocation.lat);
                 const lon = parseFloat(this.settings.selectedLocation.lon);
 
-                if (this.map) {
-                    this.map.remove();
+                // Clear previous map elements
+                if (this.marker) {
+                    this.marker.setMap(null);
+                    this.marker = null;
+                }
+                if (this.circle) {
+                    this.circle.setMap(null);
+                    this.circle = null;
                 }
 
-                this.map = L.map('mapPreview').setView([lat, lon], 13);
+                // Create map
+                this.map = new google.maps.Map(document.getElementById('mapPreview'), {
+                    center: { lat: lat, lng: lon },
+                    zoom: 13,
+                    gestureHandling: 'greedy'
+                });
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(this.map);
+                // Create marker
+                this.marker = new google.maps.Marker({
+                    position: { lat: lat, lng: lon },
+                    map: this.map
+                });
 
-                this.marker = L.marker([lat, lon]).addTo(this.map);
+                // Create circle based on radius
                 this.updateMapRadius();
             },
 
@@ -658,18 +689,37 @@
                 const radius = parseFloat(this.settings.radius) || 1;
                 const radiusInMeters = this.settings.radiusUnit === 'km' ? radius * 1000 : radius;
 
-                if (this.circle) {
-                    this.map.removeLayer(this.circle);
+                if (!this.circle) {
+                    this.circle = new google.maps.Circle({
+                        strokeColor: '#3b82f6',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#3b82f6',
+                        fillOpacity: 0.15,
+                        map: this.map,
+                        center: { lat: lat, lng: lon },
+                        radius: radiusInMeters
+                    });
+                } else {
+                    this.circle.setCenter({ lat: lat, lng: lon });
+                    this.circle.setRadius(radiusInMeters);
                 }
 
-                this.circle = L.circle([lat, lon], {
-                    color: '#3b82f6',
-                    fillColor: '#3b82f6',
-                    fillOpacity: 0.2,
-                    radius: radiusInMeters
-                }).addTo(this.map);
+                if (this.marker) {
+                    this.marker.setPosition({ lat: lat, lng: lon });
+                }
 
-                this.map.fitBounds(this.circle.getBounds(), { padding: [20, 20] });
+                // Fit map to circle bounds
+                const bounds = this.circle.getBounds();
+                if (bounds) {
+                    try {
+                        this.map.fitBounds(bounds, 20);
+                    } catch (e) {
+                        this.map.setCenter({ lat: lat, lng: lon });
+                    }
+                } else {
+                    this.map.setCenter({ lat: lat, lng: lon });
+                }
             },
 
             centerMap() {
@@ -677,7 +727,8 @@
 
                 const lat = parseFloat(this.settings.selectedLocation.lat);
                 const lon = parseFloat(this.settings.selectedLocation.lon);
-                this.map.setView([lat, lon], 13);
+                this.map.setCenter({ lat: lat, lng: lon });
+                this.map.setZoom(13);
             },
 
             validateBasicInfo() {

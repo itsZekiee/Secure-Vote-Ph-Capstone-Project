@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Secure Vote Ph - Partylists</title>
 
     <!-- Google Fonts -->
@@ -11,41 +12,26 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'system-ui', 'sans-serif']
-                    },
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 <body class="bg-slate-50 font-sans">
 <div x-data="partylistManager()" class="flex min-h-screen">
-    <!-- Sidebar -->
+    <!-- Sidebar: included from partial -->
     @include('layout.partials.sidebar')
 
     <!-- Main Content -->
     <main class="flex-1 p-4 lg:p-8">
         <!-- Header Section -->
         <div class="flex items-center mb-8">
+            <!-- mobile menu toggle -->
             <button x-on:click="collapsed = !collapsed"
                     class="p-2 rounded-xl bg-white shadow-sm border hover:bg-gray-50 transition-colors mr-4 lg:hidden">
                 <i class="ri-menu-line text-xl text-gray-600"></i>
             </button>
+
+            <!-- page title and short description -->
             <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
@@ -61,6 +47,7 @@
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            <!-- Total Partylists -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -72,6 +59,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Active Partylists -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -83,6 +72,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Total Members -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -94,6 +85,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Candidates -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -109,11 +102,12 @@
 
         <!-- Main Content Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <!-- Toolbar -->
+            <!-- Toolbar with search and create button -->
             <div class="p-6 border-b border-gray-100">
                 <div class="flex flex-col lg:flex-row lg:items-center gap-4">
                     <div class="flex-1 flex gap-4">
                         <div class="relative flex-1 max-w-md">
+                            <!-- search input bound to Alpine state -->
                             <input x-model="searchQuery"
                                    type="text"
                                    placeholder="Search partylists..."
@@ -121,6 +115,8 @@
                             <i class="ri-search-line absolute left-3 top-3.5 text-gray-400"></i>
                         </div>
                     </div>
+
+                    <!-- Export and Add buttons -->
                     <div class="flex gap-3">
                         <button class="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
                             <i class="ri-download-line"></i>
@@ -135,7 +131,7 @@
                 </div>
             </div>
 
-            <!-- Table or Empty State -->
+            <!-- Table or Empty State: shows table when partylists exist -->
             @if(!empty($partylists) && count($partylists) > 0)
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -153,6 +149,7 @@
                         @foreach($partylists as $partylist)
                             <tr class="hover:bg-gray-50 transition-colors group">
                                 <td class="p-6">
+                                    <!-- party initials and details -->
                                     <div class="flex items-center gap-4">
                                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
                                             {{ strtoupper(substr($partylist->name, 0, 2)) }}
@@ -164,6 +161,7 @@
                                     </div>
                                 </td>
                                 <td class="p-6">
+                                    <!-- leader avatar initials and name -->
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-semibold text-xs">
                                             {{ strtoupper(substr($partylist->leader_name ?? 'N/A', 0, 2)) }}
@@ -175,22 +173,26 @@
                                     </div>
                                 </td>
                                 <td class="p-6">
+                                    <!-- members count -->
                                     <div class="flex items-center gap-2">
                                         <span class="text-2xl font-bold text-gray-900">{{ $partylist->members_count ?? 0 }}</span>
                                     </div>
                                 </td>
                                 <td class="p-6">
+                                    <!-- candidates count -->
                                     <div class="flex items-center gap-3">
                                         <span class="text-lg font-semibold text-gray-900">{{ $partylist->candidates_count ?? 0 }}</span>
                                     </div>
                                 </td>
                                 <td class="p-6">
+                                    <!-- status badge -->
                                     <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-lg text-sm font-medium">
                                         <div class="w-2 h-2 bg-green-500 rounded-full"></div>
                                         {{ $partylist->status ?? 'Active' }}
                                     </span>
                                 </td>
                                 <td class="p-6">
+                                    <!-- action buttons: view, edit, delete -->
                                     <div class="flex items-center gap-2">
                                         <button class="p-2 rounded-lg text-gray-600 hover:text-purple-600 hover:bg-purple-50 transition-colors">
                                             <i class="ri-eye-line"></i>
@@ -209,7 +211,7 @@
                     </table>
                 </div>
 
-                <!-- Pagination -->
+                <!-- Pagination summary and controls -->
                 <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
                     <div class="text-sm text-gray-600">
                         Showing {{ count($partylists) }} of {{ $totalPartylists }} results
@@ -225,7 +227,7 @@
                     </div>
                 </div>
             @else
-                <!-- Empty State -->
+                <!-- Empty State shown when no partylists -->
                 <div class="flex flex-col items-center justify-center py-16 px-6">
                     <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-6">
                         <i class="ri-flag-line text-4xl text-gray-400"></i>
@@ -238,7 +240,7 @@
             @endif
         </div>
 
-        <!-- Enhanced Modal -->
+        <!-- Enhanced Modal for creating a new partylist -->
         <div x-show="showModal"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
@@ -268,48 +270,73 @@
                     </button>
                 </div>
 
-                <!-- Modal Body -->
+                <!-- Modal Body: form submits to partylists.store route -->
                 <form action="{{ route('partylists.store') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Partylist Name *</label>
+                            <!-- Partylist name input -->
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Partylist Name</label>
                             <input type="text" name="name" required
                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                    placeholder="Enter partylist name" />
                         </div>
+
+                        <!-- Organization dropdown with option to create new -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Acronym</label>
-                            <input type="text" name="acronym"
-                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                   placeholder="e.g., PA, DC, UF" />
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Organization</label>
+                            <select name="organization_id"
+                                    x-model="selectedOrganization"
+                                    @change="showNewOrgInput = (selectedOrganization === 'new')"
+                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                                <option value="">Select organization (optional)</option>
+                                @foreach($organizations ?? [] as $org)
+                                    <option value="{{ $org->id }}">{{ $org->name }}</option>
+                                @endforeach
+                                <option value="new">+ Create new organization</option>
+                            </select>
+
+                            <!-- New organization name input shown only when "new" selected -->
+                            <div x-show="showNewOrgInput" x-cloak class="mt-3">
+                                <label class="block text-sm font-semibold text-gray-900 mb-2">New Organization Name</label>
+                                <input type="text" name="organization_name" x-model="newOrganizationName"
+                                       class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                                       placeholder="Enter new organization name" />
+                                <p class="text-xs text-gray-500 mt-1">If you create a new organization it will be created along with this partylist.</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Party leader input -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Party Leader *</label>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Party Leader</label>
                             <input type="text" name="leader_name" required
                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                    placeholder="Enter leader's name" />
                         </div>
+
+                        <!-- Founded year input -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Founded Year</label>
                             <input type="number" name="founded_year"
                                    min="1900"
-                                   max="2024"
+                                   max="2025"
                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                    placeholder="2024" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Contact email -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Contact Email</label>
                             <input type="email" name="email"
                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                    placeholder="contact@partylist.com" />
                         </div>
+
+                        <!-- Logo upload -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 mb-2">Party Logo</label>
                             <input type="file" name="logo"
@@ -318,6 +345,7 @@
                         </div>
                     </div>
 
+                    <!-- Platform textarea -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-900 mb-2">Party Platform</label>
                         <textarea name="platform" rows="4"
@@ -325,7 +353,7 @@
                                   placeholder="Describe the partylist's mission, vision, and political platform..."></textarea>
                     </div>
 
-                    <!-- Modal Footer -->
+                    <!-- Modal Footer with actions -->
                     <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
                         <button type="button"
                                 @click="showModal = false"
@@ -342,15 +370,18 @@
         </div>
     </main>
 </div>
-
 <script>
+    // Alpine component state for the partylist page
     function partylistManager() {
         return {
-            collapsed: false,
-            showModal: false,
-            searchQuery: '',
-            filterStatus: '',
-            loading: false
+            collapsed: false,        // sidebar collapsed state
+            showModal: false,       // create-partylist modal visibility
+            searchQuery: '',        // search input model
+            filterStatus: '',       // (reserved) filter status
+            loading: false,         // loading flag
+            selectedOrganization: '', // selected organization id or "new"
+            showNewOrgInput: false,   // whether to show new org name input
+            newOrganizationName: ''   // new organization name model
         }
     }
 </script>

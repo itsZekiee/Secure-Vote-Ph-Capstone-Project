@@ -32,7 +32,7 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 Route::post('auth/google/one-tap/callback', [GoogleOneTapController::class, 'handleCallback']);
 
 
-// Election Form Routes 
+// Election Form Routes
 Route::post('/api/forms', [ElectionFormController::class, 'store'])
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 

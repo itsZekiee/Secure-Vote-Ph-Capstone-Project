@@ -59,11 +59,23 @@
                 </p>
             </div>
             <div class="flex gap-3">
-                <select class="px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Last 30 days</option>
-                    <option>Last 7 days</option>
-                    <option>Today</option>
+                @php
+                    // remove once create a database
+                    $organizations = $organizations ?? [
+                        ['id' => 'comelec', 'name' => 'Commission on Elections (COMELEC)'],
+                        ['id' => 'deped',  'name' => 'Department of Education (DepEd)'],
+                        ['id' => 'dilg',   'name' => 'Department of the Interior and Local Government (DILG)'],
+                    ];
+                @endphp
+
+                <select id="organizationSelect" name="organization"
+                        class="w-56 px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="" disabled selected>Select organization</option>
+                    @foreach($organizations as $org)
+                        <option value="{{ $org['id'] }}">{{ $org['name'] }}</option>
+                    @endforeach
                 </select>
+
                 <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     <i class="ri-download-line mr-2"></i>Export
                 </button>

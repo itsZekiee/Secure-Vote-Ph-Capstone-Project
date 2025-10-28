@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Secure Vote Ph - Candidate</title>
+    <!-- Fonts and icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Remix Icon CDN -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        /* Tailwind custom config */
         tailwind.config = {
             theme: {
                 extend: {
@@ -26,12 +30,17 @@
             }
         }
     </script>
+    <!-- AlpineJS for modal and basic interactivity -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 <body class="bg-slate-50 font-sans">
 <div x-data="partylistManager()" class="flex min-h-screen">
+
+    <!-- Sidebar include -->
     @include('layout.partials.sidebar')
+
     <main class="flex-1 p-4 lg:p-8">
+        <!-- Header section -->
         <div class="flex items-center mb-8">
             <button x-on:click="collapsed = !collapsed"
                     class="p-2 rounded-xl bg-white shadow-sm border hover:bg-gray-50 transition-colors mr-4 lg:hidden">
@@ -49,7 +58,10 @@
                 </p>
             </div>
         </div>
+
+        <!-- Metrics cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            <!-- Total Partylists -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -61,6 +73,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Active -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -72,6 +86,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Total Members -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -83,6 +99,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Candidates -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
@@ -95,11 +113,14 @@
                 </div>
             </div>
         </div>
+
+        <!-- Main list container -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 border-b border-gray-100">
                 <div class="flex flex-col lg:flex-row lg:items-center gap-4">
                     <div class="flex-1 flex gap-4">
                         <div class="relative flex-1 max-w-md">
+                            <!-- Search input -->
                             <input x-model="searchQuery"
                                    type="text"
                                    placeholder="Search partylists..."
@@ -108,21 +129,25 @@
                         </div>
                         {{-- Status dropdown removed --}}
                     </div>
+
                     <div class="flex gap-3">
+                        <!-- Export button -->
                         <button class="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
                             <i class="ri-download-line"></i>
                             <span class="hidden sm:block">Export</span>
                         </button>
+
+                        <!-- Add Candidate button toggles modal -->
                         <button @click="showModal = true"
                                 class="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all shadow-sm">
                             <i class="ri-add-line text-lg"></i>
-                            <span>Add Partylist</span>
+                            <span>Add Candidate</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            {{-- Empty State --}}
+            <!-- Empty state -->
             @if(empty($partylists) || count($partylists) === 0)
                 <div class="flex flex-col items-center justify-center py-24 px-6">
                     <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-6">
@@ -135,7 +160,7 @@
                     </p>
                 </div>
             @else
-                {{-- Table --}}
+                <!-- Table listing partylists -->
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-100">
@@ -184,6 +209,7 @@
                                     </div>
                                 </td>
                                 <td class="p-6">
+                                    <!-- Status badges -->
                                     @if($partylist->status === 'active')
                                         <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-lg text-sm font-medium">
                                             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -219,12 +245,11 @@
                         </tbody>
                     </table>
                 </div>
-                {{-- Pagination (optional, if using pagination) --}}
-                {{-- <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-                    {{ $partylists->links() }}
-                </div> --}}
             @endif
         </div>
+
+        <!-- Modal: Add New Candidate -->
+        <!-- Uses AlpineJS showModal to toggle visibility -->
         <div x-show="showModal"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
@@ -241,67 +266,153 @@
                  x-transition:leave-start="scale-100 opacity-100"
                  x-transition:leave-end="scale-95 opacity-0"
                  class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+
+                <!-- Modal header -->
                 <div class="flex items-center justify-between p-6 border-b border-gray-100">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Add New Partylist</h2>
-                        <p class="text-gray-600 text-sm mt-1">Create a new political partylist organization</p>
+                        <h2 class="text-2xl font-bold text-gray-900">Add New Candidate</h2>
+                        <p class="text-gray-600 text-sm mt-1">Register a candidate for the election</p>
                     </div>
                     <button @click="showModal = false"
                             class="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
                         <i class="ri-close-line text-xl"></i>
                     </button>
                 </div>
-                <form class="p-6 space-y-6">
+
+                <!-- Enhanced candidate form (incumbent removed) -->
+                <form action="{{ route('candidates.store') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+                    @csrf
+
+                    <!-- Name and Partylist -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Partylist Name *</label>
-                            <input type="text"
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Full Name</label>
+                            <input name="full_name" type="text" required
                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                   placeholder="Enter partylist name" />
+                                   placeholder="First Last" />
                         </div>
+
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Acronym</label>
-                            <input type="text"
-                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                   placeholder="e.g., PA, DC, UF" />
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Partylist</label>
+                            <select name="partylist_id" required
+                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                                <option value="">Select partylist</option>
+                                @foreach($partylists ?? [] as $party)
+                                    <option value="{{ $party->id }}">{{ $party->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Position, DOB, Gender -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Party Leader *</label>
-                            <input type="text"
-                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                   placeholder="Enter leader's name" />
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Position</label>
+                            <select name="position_id" required
+                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                                <option value="">Select position</option>
+                                @foreach($positions ?? [] as $position)
+                                    <option value="{{ $position->id }}">{{ $position->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
+
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Founded Year</label>
-                            <input type="number"
-                                   min="1900"
-                                   max="2024"
-                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                   placeholder="2024" />
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Date of Birth</label>
+                            <input name="dob" type="date"
+                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Gender</label>
+                            <select name="gender"
+                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                                <option value="">Prefer not to say</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
                         </div>
                     </div>
+
+                    <!-- Contact: Email & Phone -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Contact Email</label>
-                            <input type="email"
-                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                   placeholder="contact@partylist.com" />
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Email</label>
+                            <input name="email" type="email"
+                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                                   placeholder="candidate@example.com" />
                         </div>
+
                         <div>
-                            <label class="block text-sm font-semibold text-gray-900 mb-2">Party Logo</label>
-                            <input type="file"
-                                   accept="image/*"
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Phone</label>
+                            <input name="phone" type="tel"
+                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                                   placeholder="+63 9xx xxx xxxx" />
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">Address</label>
+                        <textarea name="address" rows="2"
+                                  class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all resize-none"
+                                  placeholder="City, Province, Country"></textarea>
+                    </div>
+
+                    <!-- Education and Website -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Education</label>
+                            <input name="education" type="text"
+                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                                   placeholder="e.g. BS Political Science" />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Website / Social Link</label>
+                            <input name="website" type="url"
+                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                                   placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <!-- Slogan -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">Campaign Slogan</label>
+                        <input name="slogan" type="text"
+                               class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                               placeholder="Short campaign slogan" />
+                    </div>
+
+                    <!-- Photo and Status (incumbent removed, layout fixed) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Candidate Photo</label>
+                            <input name="photo" type="file" accept="image/*"
                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-purple-50 file:text-purple-600 file:font-medium" />
                         </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Status</label>
+                            <select name="status"
+                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                                <option value="pending">Pending</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
                     </div>
+
+                    <!-- Biography -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-900 mb-2">Party Platform</label>
-                        <textarea rows="4"
+                        <label class="block text-sm font-semibold text-gray-900 mb-2">Biography</label>
+                        <textarea name="bio" rows="4"
                                   class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
-                                  placeholder="Describe the partylist's mission, vision, and political platform..."></textarea>
+                                  placeholder="Short biography, platform, and message to voters..."></textarea>
                     </div>
+
+                    <!-- Modal actions -->
                     <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
                         <button type="button"
                                 @click="showModal = false"
@@ -310,7 +421,7 @@
                         </button>
                         <button type="submit"
                                 class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 text-white font-medium hover:from-purple-700 hover:to-purple-800 transition-all shadow-sm">
-                            Create Partylist
+                            Create Candidate
                         </button>
                     </div>
                 </form>
@@ -318,13 +429,17 @@
         </div>
     </main>
 </div>
+
+<!-- AlpineJS component state -->
 <script>
     function partylistManager() {
         return {
             collapsed: false,
             showModal: false,
             searchQuery: '',
-            loading: false
+            loading: false,
+            selectedOrganization: '',
+            showNewOrgInput: false
         }
     }
 </script>
